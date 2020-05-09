@@ -3,8 +3,9 @@ use std::fmt;
 #[derive(PartialEq, Eq, Debug, Clone)]
 pub struct Elem {
     pub tag: String,
-    pub classes: Option<Vec<String>>,
     pub id: Option<String>,
+    pub classes: Option<Vec<String>>,
+    pub attributes: Option<Vec<Attr>>,
     pub cont: Option<Cont>,
     pub children: Option<Vec<Elem>>,
 }
@@ -15,6 +16,12 @@ pub enum Cont {
     BLOCK(Vec<String>),
 }
 
+#[derive(PartialEq, Eq, Debug, Clone)]
+pub struct Attr {
+    pub name: String,
+    pub value: String,
+}
+
 impl<'a> Elem {
 
     ///Creates an empty element 
@@ -22,8 +29,9 @@ impl<'a> Elem {
         Elem {
             tag: String::from(""),
             cont: None,
-            classes: None,
             id: None,
+            classes: None,
+            attributes: None,
             children: None,
         }
     }
@@ -32,10 +40,7 @@ impl<'a> Elem {
     pub fn from_ta(tag: &str) -> Elem {
         Elem {
             tag: String::from(tag),
-            cont: None,
-            classes: None,
-            id: None,
-            children: None,
+            ..Elem::default()
         }
     }
 
@@ -44,9 +49,7 @@ impl<'a> Elem {
         Elem {
             tag: String::from(tag),
             cont: Some(Cont::LINE(cont.to_string())),
-            classes: None,
-            id: None,
-            children: None,
+            ..Elem::default()
         }
     }
 
@@ -55,19 +58,15 @@ impl<'a> Elem {
         Elem {
             tag: String::from(tag),
             cont: Some(Cont::BLOCK(cont)),
-            classes: None,
-            id: None,
-            children: None,
+            ..Elem::default()
         }
     }
     ///Creates an element from a tag and child elements
     pub fn from_ta_ch(tag: &str, children: Vec<Elem>) -> Elem {
         Elem {
             tag: String::from(tag),
-            cont: None,
-            classes: None,
-            id: None,
             children: Some(children),
+            ..Elem::default()
         }
     }
 
@@ -75,10 +74,8 @@ impl<'a> Elem {
     pub fn from_ta_cl(tag: &str, classes: Vec<String>) -> Elem {
         Elem {
             tag: String::from(tag),
-            cont: None,
             classes: Some(classes),
-            id: None,
-            children: None,
+            ..Elem::default()
         }
     }
 
@@ -86,10 +83,8 @@ impl<'a> Elem {
     pub fn from_ta_id(tag: &str, id: &str) -> Elem {
         Elem {
             tag: String::from(tag),
-            cont: None,
-            classes: None,
             id: Some(String::from(id)),
-            children: None,
+            ..Elem::default()
         }
     }
 
@@ -97,10 +92,9 @@ impl<'a> Elem {
     pub fn from_ta_id_cl(tag: &str, id: &str, classes: Vec<String>) -> Elem {
         Elem {
             tag: String::from(tag),
-            cont: None,
             classes: Some(classes),
             id: Some(String::from(id)),
-            children: None,
+            ..Elem::default()
         }
     }
     ///Creates an element from a tag, ids, classes, and content block
@@ -110,7 +104,16 @@ impl<'a> Elem {
             cont: Some(Cont::BLOCK(content)),
             classes: Some(classes),
             id: Some(String::from(id)),
-            children: None,
+            ..Elem::default()
+        }
+    }
+
+    ///Creates an element from a tag, and attributes
+    pub fn from_ta_at(tag: &str,  attributes: Vec<Attr>) -> Elem {
+        Elem {
+            tag: String::from(tag),
+            attributes: Some(attributes),
+            ..Elem::default()
         }
     }
 }
