@@ -11,15 +11,15 @@ pub struct Elem {
 }
 
 #[derive(PartialEq, Eq, Debug, Clone)]
-pub enum Cont {
-    LINE(String),
-    BLOCK(Vec<String>),
-}
-
-#[derive(PartialEq, Eq, Debug, Clone)]
 pub struct Attr {
     pub name: String,
     pub value: String,
+}
+
+#[derive(PartialEq, Eq, Debug, Clone)]
+pub enum Cont {
+    LINE(String),
+    BLOCK(Vec<String>),
 }
 
 impl<'a> Elem {
@@ -115,6 +115,12 @@ impl<'a> Elem {
             attributes: Some(attributes),
             ..Elem::default()
         }
+    }
+}
+
+impl Attr {
+    pub fn default() -> Attr {
+        Attr {name: String::new(), value: String::new()}
     }
 }
 

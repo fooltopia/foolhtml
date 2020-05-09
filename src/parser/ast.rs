@@ -6,7 +6,7 @@ use pest::iterators::Pair;
 #[grammar = "parser/foolhtml.pest"]
 struct SHParser;
 
-use super::data_structs::{Elem,Cont};
+use super::data_structs::{Elem,Cont, Attr};
 
 pub fn from_str(input: &str) -> Vec<Elem>{
     generate(input)
@@ -33,6 +33,7 @@ fn gen_elem(val: Pair<Rule>) -> Elem {
             Rule::tag => new_elem.tag = String::from(val.as_str()),
             Rule::class_name => add_class(& mut new_elem, &val.as_str()),
             Rule::id_name => new_elem.id = Some(String::from(val.as_str())),
+            Rule::attr => add_attr(&mut new_elem, val),
             Rule::cont_inline => new_elem.cont = Some(Cont::LINE(String::from(val.as_str()))),
             Rule::cont_block_line => add_cont_block_line(&mut new_elem, &val.as_str()),
             Rule::el => add_child_elems(&mut new_elem, val),
@@ -51,6 +52,20 @@ fn add_class<'a>(elem: &mut Elem, val: &'a str) {
     }
 }
 
+fn add_attr(elem: &mut Elem, val: Pair<Rule>) {
+    let mut attr =  Attr::default();
+    for v in val.into_inner() {
+        match v.as_rule() {
+            Rule::attr_name => attr.name.push_str(v.as_str()),
+            Rule::attr_val => attr.value.push_str(v.as_str()),
+            _ => unreachable!()
+        }
+    }
+    match elem.attributes {
+        Some(ref mut vec) => {vec.push(attr);},
+        None => elem.attributes =  Some(vec![attr]),
+    }
+}
 fn add_cont_block_line<'a>(elem: &mut Elem, val: &'a str) {
     match elem.cont {
         Some(ref mut cont_enum) => {
@@ -185,5 +200,12 @@ mod tests {
         assert_eq!(output, vec![Elem::from_ta_id_cl_cob("hello", "world",
                                                         string_vec!["today"],
                                                         string_vec!["friends"])]);
+    }
+
+    #[test]
+    fn parses_simple_attribute() {
+        let output = from_str(r#"hello world="great""#);
+        assert_eq!(output, vec![Elem::from_ta_at("hello", vec![Attr{ name: "world".to_string(),
+                                                                 value: "great".to_string()}])]);
     }
 }
