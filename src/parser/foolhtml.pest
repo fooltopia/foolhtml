@@ -1,0 +1,19 @@
+el_line = _{ tag ~ id? ~ class* ~(whitesp ~ cont_inline)? ~ ("\n" | EOI) ~ child_el* }
+el_block = _{ tag ~ ":" ~ whitesp* ~ "\n" ~ cont_block+}
+el = { el_line | el_block }
+child_el    =  _{ PEEK_ALL ~ PUSH(indentation) ~ el ~ DROP }
+
+tag = { (!("\n" | " ") ~ ASCII_ALPHA_LOWER)+ }
+class = _{ "." ~ class_name }
+class_name = { ASCII_ALPHA_LOWER ~ (ASCII_ALPHA_LOWER | "-")*}
+id = _{ "#" ~ id_name }
+id_name = {  ASCII_ALPHA_LOWER ~ (ASCII_ALPHA_LOWER | "-")*}
+
+cont_block = _{ PEEK_ALL ~ PUSH(indentation) ~ cont_block_line~ ("\n" | EOI) ~ DROP }
+cont_block_line = {(!("\n") ~ ANY)+}
+cont_inline = {(!("\n") ~ ANY)+ }
+
+
+html         = _{ SOI ~ el+ ~ EOI }
+whitesp = _{ " "+ }
+indentation = _{ "  " }
