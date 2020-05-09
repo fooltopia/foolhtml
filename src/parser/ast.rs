@@ -75,6 +75,18 @@ fn add_child_elems<'a>(elem: &mut Elem, val: Pair<'a, Rule>) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// easily declare a vector of Strings using str literals
+    ///...
+    /// assert_eq!(vec!["hello".to_string()], string_vec!["hello"])
+    ///...
+    macro_rules! string_vec {
+        ( $( $x:expr ),* ) => {
+            vec![$($x.to_string(),)*];
+        }
+    }
+
+
     #[test]
     fn parses_simple_tag() {
         let output = from_str("hello");
@@ -120,7 +132,7 @@ mod tests {
                                         vec![Elem::from_ta("world"),
                                              Elem::from_ta_ch("today",
                                                               vec![Elem::from_ta("tomorrow")]),
-                                        Elem::from_ta("never")]);
+                                             Elem::from_ta("never")]);
         assert_eq!(output.len(), 1);
         assert_eq!(output[0], expected);
     }
@@ -128,19 +140,19 @@ mod tests {
     #[test]
     fn parses_single_class() {
         let output = from_str("hello.world-fam");
-        assert_eq!(output, vec![Elem::from_ta_cl("hello", vec![String::from("world-fam")])]);
+        assert_eq!(output, vec![Elem::from_ta_cl("hello", string_vec!["world-fam"])]);
     }
 
     #[test]
     fn parses_single_char_class() {
         let output = from_str("hello.w");
-        assert_eq!(output, vec![Elem::from_ta_cl("hello", vec![String::from("w")])]);
+        assert_eq!(output, vec![Elem::from_ta_cl("hello", string_vec!["w"])]);
     }
 
     #[test]
     fn parses_two_classes() {
         let output = from_str("hello.world.fam");
-        assert_eq!(output, vec![Elem::from_ta_cl("hello", vec![String::from("world"), String::from("fam")])]);
+        assert_eq!(output, vec![Elem::from_ta_cl("hello", string_vec!["world", "fam"])]);
     }
 
     #[test]
@@ -158,12 +170,12 @@ mod tests {
     #[test]
     fn parses_id_and_classes() {
         let output = from_str("hello#world.not.today");
-        assert_eq!(output, vec![Elem::from_ta_id_cl("hello", "world", vec![String::from("not"), String::from("today")])]);
+        assert_eq!(output, vec![Elem::from_ta_id_cl("hello", "world", string_vec!["not", "today"])]);
     }
 
     #[test]
     fn parses_multi_line_content() {
         let output = from_str("hello:\n  bon\n  jour");
-        assert_eq!(output, vec![Elem::from_ta_cob("hello", vec!["bon".to_string(), "jour".to_string()])])
+        assert_eq!(output, vec![Elem::from_ta_cob("hello", string_vec!["bon", "jour"])])
     }
 }
