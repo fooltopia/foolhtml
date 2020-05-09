@@ -34,7 +34,7 @@ fn gen_elem(val: Pair<Rule>) -> Elem {
             Rule::class_name => add_class(& mut new_elem, &val.as_str()),
             Rule::id_name => new_elem.id = Some(String::from(val.as_str())),
             Rule::cont_inline => new_elem.cont = Some(Cont::LINE(String::from(val.as_str()))),
-            Rule::cont_block_line => add_cont_line(&mut new_elem, &val.as_str()),
+            Rule::cont_block_line => add_cont_block_line(&mut new_elem, &val.as_str()),
             Rule::el => add_child_elems(&mut new_elem, val),
             Rule::EOI => (),
             _ => unreachable!(),
@@ -51,7 +51,7 @@ fn add_class<'a>(elem: &mut Elem, val: &'a str) {
     }
 }
 
-fn add_cont_line<'a>(elem: &mut Elem, val: &'a str) {
+fn add_cont_block_line<'a>(elem: &mut Elem, val: &'a str) {
     match elem.cont {
         Some(ref mut cont_enum) => {
             match cont_enum {
