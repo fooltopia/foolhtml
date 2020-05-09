@@ -1,5 +1,5 @@
 use pest::Parser;
-use pest_derive::*;
+use pest_derive::Parser;
 use pest::iterators::Pair;
 
 #[derive(Parser)]
