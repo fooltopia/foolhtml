@@ -103,6 +103,16 @@ impl<'a> Elem {
             children: None,
         }
     }
+    ///Creates an element from a tag, ids, classes, and content block
+    pub fn from_ta_id_cl_cob(tag: &str, id: &str, classes: Vec<String>, content: Vec<String>) -> Elem {
+        Elem {
+            tag: String::from(tag),
+            cont: Some(Cont::BLOCK(content)),
+            classes: Some(classes),
+            id: Some(String::from(id)),
+            children: None,
+        }
+    }
 }
 
 impl fmt::Display for Cont {

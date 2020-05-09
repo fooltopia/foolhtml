@@ -178,4 +178,12 @@ mod tests {
         let output = from_str("hello:\n  bon\n  jour");
         assert_eq!(output, vec![Elem::from_ta_cob("hello", string_vec!["bon", "jour"])])
     }
+
+    #[test]
+    fn parses_id_and_class_on_block_el() {
+        let output = from_str("hello#world.today:\n  friends");
+        assert_eq!(output, vec![Elem::from_ta_id_cl_cob("hello", "world",
+                                                        string_vec!["today"],
+                                                        string_vec!["friends"])]);
+    }
 }
