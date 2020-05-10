@@ -204,10 +204,18 @@ mod tests {
                                                             value: "great".to_string()}])]);
     }
     #[test]
-    fn parses_attribute_no_quotes() {
+    fn parses_naked_attribute_no_quotes() {
         let output = from_str("hello world=great");
         assert_eq!(output, vec![Elem::from_ta_at("hello",
                                                  vec![Attr{ name: "world".to_string(),
                                                             value: "great".to_string()}])]);
+    }
+    #[test]
+    fn parses_naked_attribute_with_children() {
+        let output = from_str("hello world=great\n  today");
+        assert_eq!(output, vec![Elem::from_ta_at_ch("hello",
+                                                 vec![Attr{ name: "world".to_string(),
+                                                            value: "great".to_string()}],
+                                                 vec![Elem::from_ta("today")])]);
     }
 }

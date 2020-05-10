@@ -117,6 +117,16 @@ impl<'a> Elem {
             ..Elem::default()
         }
     }
+
+    ///Creates an element from a tag, attributes, and children
+    pub fn from_ta_at_ch(tag: &str,  attributes: Vec<Attr>, children: Vec<Elem>) -> Elem {
+        Elem {
+            tag: String::from(tag),
+            attributes: Some(attributes),
+            children: Some(children),
+            ..Elem::default()
+        }
+    }
 }
 
 impl Attr {
