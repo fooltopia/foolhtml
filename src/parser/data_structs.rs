@@ -1,5 +1,6 @@
 use std::fmt;
 
+#[non_exhaustive] //TODO remove once stable
 #[derive(PartialEq, Eq, Debug, Clone)]
 pub struct Elem {
     pub tag: String,
