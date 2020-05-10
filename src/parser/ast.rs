@@ -85,8 +85,6 @@ fn add_child_elems<'a>(elem: &mut Elem, val: Pair<'a, Rule>) {
 
 
 
-// impl<'a> Eq for Elem {}
-
 #[cfg(test)]
 mod tests {
     use super::*;
