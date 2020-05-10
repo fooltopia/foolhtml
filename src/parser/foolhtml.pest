@@ -1,4 +1,4 @@
-el_line = _{ tag ~ id? ~ class* ~ (whitesp ~ attr)* ~(whitesp ~ cont_inline)? ~ ("\n" | EOI) ~ child_el* }
+el_line = _{ tag ~ id? ~ class* ~ (whitesp ~ attr)* ~(whitesp ~ cont_inline)? ~ ("\n" | eoi) ~ child_el* }
 el_block = _{ tag ~ id? ~ class* ~ ":" ~ whitesp* ~ "\n" ~ cont_block+}
 el = { el_line | el_block }
 child_el    =  _{ PEEK_ALL ~ PUSH(indentation) ~ el ~ DROP }
@@ -12,15 +12,24 @@ class = _{ "." ~ class_name }
 id = _{ "#" ~ id_name }
 id_name = {  ident }
 
-attr = { attr_name ~ "=" ~ "\"" ~ attr_val ~ "\"" }
+attr = { attr_name ~ "=" ~ attr_val  }
+quoted_attr_val = _{ d_quote ~ q_attr_val ~ d_quote}
+q_attr_val = { (!(d_quote) ~ ANY)+ }
+naked_attr_val = _{ n_attr_val ~ (whitesp | eol)}
+n_attr_val = { (!(d_quote | s_quote | "\n" | whitesp) ~ ANY)+ }
 attr_name = { ident }
-attr_val = { (!("\"") ~ ANY)+ }
+attr_val = _{ quoted_attr_val | naked_attr_val }
 
-cont_block = _{ PEEK_ALL ~ PUSH(indentation) ~ cont_block_line~ ("\n" | EOI) ~ DROP }
+cont_block = _{ PEEK_ALL ~ PUSH(indentation) ~ cont_block_line~ ("\n" | eoi) ~ DROP }
 cont_block_line = {(!("\n") ~ ANY)+}
 cont_inline = {(!("\n") ~ ANY)+ }
 
 
-html         = _{ SOI ~ el+ ~ EOI }
-whitesp = _{ " "+ }
+html         = _{ SOI ~ el+ ~ eoi }
+whitesp = _{ SPACE_SEPARATOR+ }
+d_quote = _{ "\"" }
+s_quote = _{ "'" }
+eol = _{ ("\n" | eoi) }
+eoi = _{ !ANY }
 indentation = _{ "  " }
+

@@ -16,10 +16,6 @@ fn generate(input: &str) -> Vec<Elem> {
     let mut ast : Vec<Elem> = Vec::new();
     let parse_res = SHParser::parse(Rule::html, input).expect("unsuccessful parse");
     for item in parse_res {
-        if item.as_rule() == Rule::EOI {
-            continue;
-        }
-
         let new_ast_elem = gen_elem(item);
         ast.push(new_ast_elem)
     }
@@ -37,7 +33,6 @@ fn gen_elem(val: Pair<Rule>) -> Elem {
             Rule::cont_inline => new_elem.cont = Some(Cont::LINE(String::from(val.as_str()))),
             Rule::cont_block_line => add_cont_block_line(&mut new_elem, &val.as_str()),
             Rule::el => add_child_elems(&mut new_elem, val),
-            Rule::EOI => (),
             _ => unreachable!(),
         }
     }
@@ -57,7 +52,8 @@ fn add_attr(elem: &mut Elem, val: Pair<Rule>) {
     for v in val.into_inner() {
         match v.as_rule() {
             Rule::attr_name => attr.name.push_str(v.as_str()),
-            Rule::attr_val => attr.value.push_str(v.as_str()),
+            //Couldn't figure out in the .pest file how to use the same rule for both
+            Rule::n_attr_val | Rule::q_attr_val => attr.value.push_str(v.as_str()),
             _ => unreachable!()
         }
     }
@@ -203,7 +199,15 @@ mod tests {
     #[test]
     fn parses_simple_attribute() {
         let output = from_str(r#"hello world="great""#);
-        assert_eq!(output, vec![Elem::from_ta_at("hello", vec![Attr{ name: "world".to_string(),
-                                                                 value: "great".to_string()}])]);
+        assert_eq!(output, vec![Elem::from_ta_at("hello",
+                                                 vec![Attr{ name: "world".to_string(),
+                                                            value: "great".to_string()}])]);
+    }
+    #[test]
+    fn parses_attribute_no_quotes() {
+        let output = from_str("hello world=great");
+        assert_eq!(output, vec![Elem::from_ta_at("hello",
+                                                 vec![Attr{ name: "world".to_string(),
+                                                            value: "great".to_string()}])]);
     }
 }
