@@ -203,6 +203,7 @@ mod tests {
                                                  vec![Attr{ name: "world".to_string(),
                                                             value: "great".to_string()}])]);
     }
+
     #[test]
     fn parses_naked_attribute_no_quotes() {
         let output = from_str("hello world=great");
@@ -210,6 +211,7 @@ mod tests {
                                                  vec![Attr{ name: "world".to_string(),
                                                             value: "great".to_string()}])]);
     }
+
     #[test]
     fn parses_naked_attribute_with_children() {
         let output = from_str("hello world=great\n  today");
