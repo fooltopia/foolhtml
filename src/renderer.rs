@@ -20,19 +20,19 @@ mod tests {
 
     #[test]
     fn renders_simple_tag() {
-        let output = render([Elem::from_ta("hello")].to_vec());
+        let output = render(vec![Elem::from_ta("hello")]);
         assert_eq!(output, "<hello/>");
     }
     #[test]
     fn renders_two_tags() {
-        let output = render([Elem::from_ta("hello"),
-                             Elem::from_ta("world")].to_vec());
+        let output = render(vec![Elem::from_ta("hello"),
+                             Elem::from_ta("world")]);
         assert_eq!(output, "<hello/>\n<world/>");
     }
 
     #[test]
-    fn renders_tag_cont_template() {
-        let output = render([Elem::from_ta_col("hello", "world")].to_vec());
+    fn renders_tag_cont() {
+        let output = render(vec![Elem::from_ta_col("hello", "world")]);
         assert_eq!(output, "<hello>world</hello>")
     }
 }
