@@ -84,16 +84,8 @@ fn add_child_elems<'a>(elem: &mut Elem, val: Pair<'a, Rule>) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::string_vec;
 
-    /// easily declare a vector of Strings using str literals
-    ///...
-    /// assert_eq!(vec!["hello".to_string()], string_vec!["hello"])
-    ///...
-    macro_rules! string_vec {
-        ( $( $x:expr ),* ) => {
-            vec![$($x.to_string(),)*];
-        }
-    }
 
 
     #[test]

@@ -135,6 +135,12 @@ impl Attr {
     }
 }
 
+impl fmt::Display for Attr {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, r#"{name}="{val}""#, name=self.name, val=self.value)
+    }
+}
+
 impl fmt::Display for Cont {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {

@@ -1,6 +1,7 @@
 #![allow(dead_code)] // TODO remove
 mod parser;
 mod renderer;
+mod util;
 
 use parser::ast;
 

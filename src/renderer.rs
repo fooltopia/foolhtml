@@ -9,12 +9,26 @@ pub fn render(input: Vec<Elem>) -> String {
     result
 }
 
-pub fn render_elem(elem: &Elem) -> String {
+fn render_elem(elem: &Elem) -> String {
     let mut result = String::new();
     let mut opening = String::new();
     let mut content = String::new();
 
     opening.push_str(&elem.tag);
+
+    if let Some(id) = &elem.id {
+        opening.push_str(&format!(r#" id="{}""#, &id));
+    }
+
+    if let Some(classes) = &elem.classes {
+        opening.push_str(&format!(r#" class="{}""#, classes.join(" ")));
+    }
+
+    if let Some(attrs) = &elem.attr {
+        for a in attrs {
+            opening.push_str(&format!(r#" {}"#,a));
+        }
+    }
 
     if let Some(c) = &elem.cont {
         content.push_str(&c.to_string());
@@ -35,6 +49,8 @@ pub fn render_elem(elem: &Elem) -> String {
 
 #[cfg(test)]
 mod tests {
+    use crate::parser::data_structs::Attr;
+    use crate::string_vec;
     use super::*;
 
     #[test]
@@ -59,5 +75,27 @@ mod tests {
     fn renders_tag_children() {
         let output = render(vec![Elem::from_ta_ch("hello", vec![Elem::from_ta("world")])]);
         assert_eq!(output, "<hello><world/></hello>")
+    }
+
+    #[test]
+    fn renders_id() {
+        let output = render(vec![Elem::from_ta_id("hello", "world")]);
+        assert_eq!(output, "<hello id=\"world\"/>")
+    }
+
+    #[test]
+    fn renders_classes() {
+        let output = render(vec![Elem::from_ta_cl("hello",string_vec!["world", "universe"])]);
+        assert_eq!(output, "<hello class=\"world universe\"/>")
+    }
+
+    #[test]
+    fn renders_attributes() {
+        let output = render(vec![Elem::from_ta_at("hello",
+                                                  vec![Attr{ name: "world".to_string(),
+                                                             value: "great".to_string()},
+                                                       Attr{ name: "sun".to_string(),
+                                                             value: "shining".to_string()}])]);
+        assert_eq!(output, "<hello world=\"great\" sun=\"shining\"/>")
     }
 }
