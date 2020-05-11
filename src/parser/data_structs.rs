@@ -6,7 +6,7 @@ pub struct Elem {
     pub tag: String,
     pub id: Option<String>,
     pub classes: Option<Vec<String>>,
-    pub attributes: Option<Vec<Attr>>,
+    pub attr: Option<Vec<Attr>>,
     pub cont: Option<Cont>,
     pub children: Option<Vec<Elem>>,
 }
@@ -32,7 +32,7 @@ impl<'a> Elem {
             cont: None,
             id: None,
             classes: None,
-            attributes: None,
+            attr: None,
             children: None,
         }
     }
@@ -109,20 +109,20 @@ impl<'a> Elem {
         }
     }
 
-    ///Creates an element from a tag, and attributes
+    ///Creates an element from a tag, and attr
     pub fn from_ta_at(tag: &str,  attributes: Vec<Attr>) -> Elem {
         Elem {
             tag: String::from(tag),
-            attributes: Some(attributes),
+            attr: Some(attributes),
             ..Elem::default()
         }
     }
 
-    ///Creates an element from a tag, attributes, and children
+    ///Creates an element from a tag, attr, and children
     pub fn from_ta_at_ch(tag: &str,  attributes: Vec<Attr>, children: Vec<Elem>) -> Elem {
         Elem {
             tag: String::from(tag),
-            attributes: Some(attributes),
+            attr: Some(attributes),
             children: Some(children),
             ..Elem::default()
         }

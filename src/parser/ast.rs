@@ -57,9 +57,9 @@ fn add_attr(elem: &mut Elem, val: Pair<Rule>) {
             _ => unreachable!()
         }
     }
-    match elem.attributes {
+    match elem.attr{
         Some(ref mut vec) => {vec.push(attr);},
-        None => elem.attributes =  Some(vec![attr]),
+        None => elem.attr=  Some(vec![attr]),
     }
 }
 fn add_cont_block_line<'a>(elem: &mut Elem, val: &'a str) {
