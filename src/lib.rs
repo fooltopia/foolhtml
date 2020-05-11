@@ -22,7 +22,7 @@ mod tests {
     #[test]
     fn renders_two_tags_template() {
         let output = render_static_template("hello\nworld");
-        assert_eq!(output, "<hello/>\n<world/>")
+        assert_eq!(output, "<hello/><world/>")
     }
 
     #[test]
