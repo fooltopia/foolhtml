@@ -1,9 +1,9 @@
-html         = _{ SOI ~ el+ ~ eoi }
+html = _{ SOI ~ el+ ~ eoi }
 
 el = { el_line | el_block }
 el_line = _{ tag ~ id? ~ class* ~ (whitesp ~ attr)* ~(whitesp ~ cont_inline)? ~ ("\n" | eoi) ~ child_el* }
-el_block = _{ tag ~ id? ~ class* ~ ":" ~ whitesp* ~ "\n" ~ cont_block+}
-child_el    =  _{ PEEK_ALL ~ PUSH(indentation) ~ el ~ DROP }
+el_block = _{ tag ~ id? ~ class* ~ (whitesp ~ attr)* ~ ":" ~ whitesp* ~ "\n" ~ cont_block+}
+child_el = _{ PEEK_ALL ~ PUSH(indentation) ~ el ~ DROP }
 cont_block = _{ PEEK_ALL ~ PUSH(indentation) ~ cont_block_line~ ("\n" | eoi) ~ DROP }
 cont_block_line = {(!("\n") ~ ANY)+}
 cont_inline = {(!("\n") ~ ANY)+ }
@@ -21,7 +21,7 @@ attr_val = _{ quoted_attr_val | naked_attr_val }
 quoted_attr_val = _{ d_quote ~ q_attr_val ~ d_quote}
 naked_attr_val = _{ n_attr_val }
 q_attr_val = { (!(d_quote) ~ ANY)+ }
-n_attr_val = { (!(d_quote | s_quote | "\n" | whitesp) ~ ANY)+ }
+n_attr_val = { (ASCII_ALPHA | "-")+ }
 
 ident = _{ ASCII_ALPHA_LOWER ~ (ASCII_ALPHA_LOWER | "-")*}
 

@@ -109,6 +109,16 @@ impl<'a> Elem {
         }
     }
 
+
+    ///Creates an element from a tag, attr, and content block
+    pub fn from_ta_at_cob(tag: &str,  attributes: Vec<Attr>, content: Vec<String>) -> Elem {
+        Elem {
+            tag: String::from(tag),
+            cont: Some(Cont::BLOCK(content)),
+            attr: Some(attributes),
+            ..Elem::default()
+        }
+    }
     ///Creates an element from a tag, and attr
     pub fn from_ta_at(tag: &str,  attributes: Vec<Attr>) -> Elem {
         Elem {
