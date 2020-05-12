@@ -1,4 +1,4 @@
-use crate::parser::data_structs::Elem;
+use crate::parser::data_structs::{Elem, Cont};
 
 pub fn render(input: Vec<Elem>) -> String {
     let mut result = String::new();
@@ -31,7 +31,7 @@ fn render_elem(elem: &Elem) -> String {
     }
 
     if let Some(c) = &elem.cont {
-        content.push_str(&c.to_string());
+        content.push_str(&render_cont(c));
     }
     if let Some(children) = &elem.children {
         for child in children {
@@ -45,6 +45,16 @@ fn render_elem(elem: &Elem) -> String {
         result.push_str(&format!("<{op}>{co}</{cl}>", op=opening, co=content, cl=elem.tag))
     }
     result
+}
+
+fn render_cont(cont: &Cont) -> String {
+    match cont {
+        Cont::LINE(l) => l.to_string(),
+        Cont::BLOCK(b) => {
+            b.join("<br>")
+        }
+    }
+    
 }
 
 #[cfg(test)]
@@ -97,5 +107,16 @@ mod tests {
                                                        Attr{ name: "sun".to_string(),
                                                              value: "shining".to_string()}])]);
         assert_eq!(output, "<hello world=\"great\" sun=\"shining\"/>")
+    }
+    #[test]
+    fn renders_attributes_on_children() {
+        let output = render(vec![Elem::from_ta_at_ch("hello",
+                                                     vec![Attr{ name: "world".to_string(),
+                                                             value: "great".to_string()}],
+                                                     vec![Elem::from_ta_at("how",
+                                                                           vec![Attr{ name: "are".to_string(),
+                                                                                      value: "you?".to_string()}])])]);
+
+        assert_eq!(output, "<hello world=\"great\"><how are=\"you?\"/></hello>")
     }
 }
