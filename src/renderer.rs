@@ -40,7 +40,7 @@ fn render_elem(elem: &Elem) -> String {
     }
 
     if content == "" {
-        result.push_str(&format!("<{}/>", opening))
+        result.push_str(&format!("<{} />", opening))
     } else {
         result.push_str(&format!("<{op}>{co}</{cl}>", op=opening, co=content, cl=elem.tag))
     }
@@ -66,13 +66,13 @@ mod tests {
     #[test]
     fn renders_simple_tag() {
         let output = render(vec![Elem::from_ta("hello")]);
-        assert_eq!(output, "<hello/>");
+        assert_eq!(output, "<hello />");
     }
     #[test]
     fn renders_two_tags() {
         let output = render(vec![Elem::from_ta("hello"),
                              Elem::from_ta("world")]);
-        assert_eq!(output, "<hello/><world/>");
+        assert_eq!(output, "<hello /><world />");
     }
 
     #[test]
@@ -84,19 +84,19 @@ mod tests {
     #[test]
     fn renders_tag_children() {
         let output = render(vec![Elem::from_ta_ch("hello", vec![Elem::from_ta("world")])]);
-        assert_eq!(output, "<hello><world/></hello>")
+        assert_eq!(output, "<hello><world /></hello>")
     }
 
     #[test]
     fn renders_id() {
         let output = render(vec![Elem::from_ta_id("hello", "world")]);
-        assert_eq!(output, "<hello id=\"world\"/>")
+        assert_eq!(output, "<hello id=\"world\" />")
     }
 
     #[test]
     fn renders_classes() {
         let output = render(vec![Elem::from_ta_cl("hello",string_vec!["world", "universe"])]);
-        assert_eq!(output, "<hello class=\"world universe\"/>")
+        assert_eq!(output, "<hello class=\"world universe\" />")
     }
 
     #[test]
@@ -106,7 +106,7 @@ mod tests {
                                                              value: "great".to_string()},
                                                        Attr{ name: "sun".to_string(),
                                                              value: "shining".to_string()}])]);
-        assert_eq!(output, "<hello world=\"great\" sun=\"shining\"/>")
+        assert_eq!(output, "<hello world=\"great\" sun=\"shining\" />")
     }
     #[test]
     fn renders_attributes_on_children() {
@@ -117,6 +117,6 @@ mod tests {
                                                                            vec![Attr{ name: "are".to_string(),
                                                                                       value: "you?".to_string()}])])]);
 
-        assert_eq!(output, "<hello world=\"great\"><how are=\"you?\"/></hello>")
+        assert_eq!(output, "<hello world=\"great\"><how are=\"you?\" /></hello>")
     }
 }

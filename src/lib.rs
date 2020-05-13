@@ -17,13 +17,13 @@ mod tests {
     #[test]
     fn renders_single_tag_template() {
         let output = render_static_template("hello");
-        assert_eq!(output, "<hello/>")
+        assert_eq!(output, "<hello />")
     }
 
     #[test]
     fn renders_two_tags_template() {
         let output = render_static_template("hello\nworld");
-        assert_eq!(output, "<hello/><world/>")
+        assert_eq!(output, "<hello /><world />")
     }
 
     #[test]
