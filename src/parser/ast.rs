@@ -197,6 +197,14 @@ mod tests {
     }
 
     #[test]
+    fn parses_attribute_with_single_quotes() {
+        let output = from_str(r#"hello world='Mr. "Anderson"'"#);
+        assert_eq!(output, vec![Elem::from_ta_at("hello",
+                                                 vec![Attr{ name: "world".to_string(),
+                                                            value: "Mr. \"Anderson\"".to_string()}])]);
+    }
+
+    #[test]
     fn parses_naked_attribute_no_quotes() {
         let output = from_str("hello world=great");
         assert_eq!(output, vec![Elem::from_ta_at("hello",

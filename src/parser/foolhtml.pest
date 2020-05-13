@@ -18,16 +18,15 @@ id_name = {  ident }
 attr = { attr_name ~ "=" ~ attr_val  }
 attr_name = { ident }
 attr_val = _{ quoted_attr_val | naked_attr_val }
-quoted_attr_val = _{ d_quote ~ q_attr_val ~ d_quote}
+quoted_attr_val = _{ PUSH(opening_quote) ~ q_attr_val ~ POP}
 naked_attr_val = _{ n_attr_val }
-q_attr_val = { (!(d_quote) ~ ANY)+ }
-n_attr_val = { (ASCII_ALPHA | "-")+ }
+q_attr_val = { (!(PEEK) ~ ANY)+ }
+n_attr_val = { (ASCII_ALPHA | ASCII_DIGIT | "-")+ }
+opening_quote = _{ "\"" | "'" }
 
 ident = _{ ASCII_ALPHA_LOWER ~ (ASCII_ALPHA_LOWER | "-")*}
 
 whitesp = _{ SPACE_SEPARATOR+ }
-d_quote = _{ "\"" }
-s_quote = _{ "'" }
 eol = _{ ("\n" | eoi) }
 eoi = _{ !ANY }
 indentation = _{ "  " }
