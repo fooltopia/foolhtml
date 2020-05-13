@@ -147,7 +147,11 @@ impl Attr {
 
 impl fmt::Display for Attr {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, r#"{name}="{val}""#, name=self.name, val=self.value)
+        if self.value.contains('\"') {
+            write!(f, r#"{name}='{val}'"#, name=self.name, val=self.value)
+        } else {
+            write!(f, r#"{name}="{val}""#, name=self.name, val=self.value)
+        }
     }
 }
 

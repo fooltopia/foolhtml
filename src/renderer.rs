@@ -26,7 +26,7 @@ fn render_elem(elem: &Elem) -> String {
 
     if let Some(attrs) = &elem.attr {
         for a in attrs {
-            opening.push_str(&format!(r#" {}"#,a));
+            opening.push_str(&format!(r#" {}"#, a));
         }
     }
 
@@ -107,6 +107,14 @@ mod tests {
                                                        Attr{ name: "sun".to_string(),
                                                              value: "shining".to_string()}])]);
         assert_eq!(output, "<hello world=\"great\" sun=\"shining\" />")
+    }
+
+    #[test]
+    fn renders_single_quoted() {
+        let output = render(vec![Elem::from_ta_at("img",
+                                                  vec![Attr{ name: "Mr".to_string(),
+                                                             value: "Thomas \"Neo\" Anderson".to_string()}])]);
+        assert_eq!(output, "<img Mr='Thomas \"Neo\" Anderson' />")
     }
     #[test]
     fn renders_attributes_on_children() {
