@@ -22,39 +22,39 @@ mod tests {
 
     #[test]
     fn renders_two_tags_template() {
-        let output = render_static_template("hello\nworld");
-        assert_eq!(output, "<hello /><world />")
+        let output = render_static_template("br\nbr");
+        assert_eq!(output, "<br /><br />")
     }
 
     #[test]
     fn renders_tag_content_template() {
-        let output = render_static_template("hello world");
-        assert_eq!(output, "<hello>world</hello>")
+        let output = render_static_template("p hello world");
+        assert_eq!(output, "<p>hello world</p>")
     }
 
     #[test]
     fn renders_tag_block_content_template() {
-        let output = render_static_template("hello:\n  how\n  are\n  you?");
-        assert_eq!(output, "<hello>how<br>are<br>you?</hello>")
+        let output = render_static_template("p:\n  how\n  are\n  you?");
+        assert_eq!(output, "<p>how<br>are<br>you?</p>")
     }
 
     #[test]
     fn renders_tag_tag_id_attributes_content() {
-        let output = render_static_template("hello#world.great sun=shining How are you?");
-        assert_eq!(output, "<hello id=\"world\" class=\"great\" sun=\"shining\">How are you?</hello>")
+        let output = render_static_template("div#title.big lang=en How are you?");
+        assert_eq!(output, "<div id=\"title\" class=\"big\" lang=\"en\">How are you?</div>")
     }
 
 
     #[test]
     fn renders_tag_tag_id_attributes_children() {
-        let input = "hello#world.great sun=shining
-  how#are.you today=\"a great day\":
-    I'm fine";
+        let input = "div#greeting.fancy type=\"Friend's Hello\"
+  p#question.informal lang=en:
+    How are you, mate?";
         println!("{}", input);
         let output = render_static_template(input);
-        let expected = "<hello id=\"world\" class=\"great\" sun=\"shining\">\
-                          <how id=\"are\" class=\"you\" today=\"a great day\">I'm fine</how>\
-                          </hello>";
+        let expected = "<div id=\"greeting\" class=\"fancy\" type=\"Friend's Hello\">\
+                          <p id=\"question\" class=\"informal\" lang=\"en\">How are you, mate?</p>\
+                          </div>";
         assert_eq!(output, expected)
     }
 }
