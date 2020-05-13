@@ -8,7 +8,7 @@ cont_block = _{ PEEK_ALL ~ PUSH(indentation) ~ cont_block_line~ ("\n" | eoi) ~ D
 cont_block_line = {(!("\n") ~ ANY)+}
 cont_inline = {(!("\n") ~ ANY)+ }
 
-tag = { (!("\n" | " ") ~ ASCII_ALPHA_LOWER)+ }
+tag = { (!("\n" | " ") ~ ASCII_ALPHA_LOWER | ASCII_DIGIT)+ }
 
 class_name = {  ident }
 class = _{ "." ~ class_name }
@@ -24,7 +24,7 @@ q_attr_val = { (!(PEEK) ~ ANY)+ }
 n_attr_val = { (ASCII_ALPHA | ASCII_DIGIT | "-")+ }
 opening_quote = _{ "\"" | "'" }
 
-ident = _{ ASCII_ALPHA_LOWER ~ (ASCII_ALPHA_LOWER | "-")*}
+ident = _{ (ASCII_ALPHA_LOWER | ASCII_DIGIT) ~ (ASCII_ALPHA_LOWER |ASCII_DIGIT | "-")*}
 
 whitesp = _{ SPACE_SEPARATOR+ }
 eol = _{ ("\n" | eoi) }

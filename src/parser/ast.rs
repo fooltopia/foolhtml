@@ -158,8 +158,8 @@ mod tests {
 
     #[test]
     fn parses_single_id() {
-        let output = from_str("hello#world-class");
-        assert_eq!(output, vec![Elem::from_ta_id("hello", "world-class")]);
+        let output = from_str("hello#world-class-nr1");
+        assert_eq!(output, vec![Elem::from_ta_id("hello", "world-class-nr1")]);
     }
 
     #[test]
