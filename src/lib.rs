@@ -44,7 +44,6 @@ mod tests {
         assert_eq!(output, "<div id=\"title\" class=\"big\" lang=\"en\">How are you?</div>")
     }
 
-
     #[test]
     fn renders_tag_tag_id_attributes_children() {
         let input = "div#greeting.fancy type=\"Friend's Hello\"
@@ -55,6 +54,19 @@ mod tests {
         let expected = "<div id=\"greeting\" class=\"fancy\" type=\"Friend's Hello\">\
                           <p id=\"question\" class=\"informal\" lang=\"en\">How are you, mate?</p>\
                           </div>";
+        assert_eq!(output, expected)
+    }
+
+    #[test]
+    fn renders_complex_static_template() {
+       let input =  "h1#title.fancy.large Hello World
+div
+  img#title-image src=\"images/title.jpg\" width=1000 height=300 alt=\"A great title image.\"";
+        let output = render_static_template(input);
+        let expected = "<h1 id=\"title\" class=\"fancy large\">Hello World</h1>\
+                        <div>\
+                        <img id=\"title-image\" src=\"images/title.jpg\" width=\"1000\" height=\"300\" alt=\"A great title image.\" />\
+                        </div>";
         assert_eq!(output, expected)
     }
 }
