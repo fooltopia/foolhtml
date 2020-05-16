@@ -3,7 +3,18 @@ mod parser;
 mod renderer;
 mod util;
 
+use std::collections::BTreeMap;
+
 use parser::ast;
+
+pub fn render_template_str(input: &str, values: &BTreeMap<&str, &str>) -> String {
+    let mut html = render_static_template_str(input);
+    for (k,v) in values {
+        let search = format!("{{{{{}}}}}", k);
+        html = html.replace(&search, v);
+    }
+    html
+}
 
 pub fn render_static_template_str(input: &str) -> String {
     let tree = ast::from_str(input);
@@ -68,5 +79,14 @@ div
                         <img id=\"title-image\" src=\"images/title.jpg\" width=\"1000\" height=\"300\" alt=\"A great title image.\" />\
                         </div>";
         assert_eq!(output, expected)
+    }
+
+    #[test]
+    fn renders_variables() {
+        let mut map = BTreeMap::new(); 
+        map.insert("first_name", "John");
+        map.insert("last_name", "Smith");
+        let rendered = render_template_str("h1 Hello, {{first_name}} {{last_name}}!", &map);
+        assert_eq!(rendered,"<h1>Hello, John Smith!</h1>")
     }
 }
