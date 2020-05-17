@@ -73,7 +73,47 @@ renders to
 ```
 <img class="portrait" url="images/anderson.jpg" alt='Thomas "Neo" Anderson' width="400" />
 ```
+### Partial Templates (planned)
+Here's an example of a partial template using both parent-child relationships and includes.
 
+Parent Template (parent):
+```
+head 
+  title {pv{title}} /* {pv{variable_name}} defines a parent variable that needs
+                     * to be assigned a value in every child template. */
+body
+  >navbar //Include another template that doesn't know about the parent template.
+  <=child /* Can be used only once per template. This template
+           * needs to assign a value to all parent variables */
+```
+Navigation Bar (navbar):
+```
+nav 
+  a href="/blog/" Blog
+  a href="/about/" About
+````
+Child Template (child):
+```
+>!parent // Specify the name of the parent template.
+>pv title Awesome Page //Set the value of the "title" variable in the parent template
+div#content
+  h1 Awesome Page
+```
+When you render the child template, this will be the output
+```html
+<head>
+  <title>Awesome Page</title>
+<head>
+<body>
+  <nav>
+    <a href="/blog/">Blog</a>
+    <h href="/about/">About</a>
+  </nav>
+  <div id="content">
+    <h1>Awesome Page</h1>
+  </div>
+</body>
+```
 ### Using the Library
 The library is not available on crates.io yet. To use it, you have to check it out from the repository. It provides a single public function:
 ```Rust
