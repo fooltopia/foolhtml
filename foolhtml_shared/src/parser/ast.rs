@@ -220,6 +220,7 @@ mod tests {
                                                             value: "great".to_string()}],
                                                  vec![Elem::from_ta("today")])]);
     }
+
     #[test]
     fn parses_naked_attribute_block() {
         let output = from_str("hello world=great:\n  good\n  morning");
@@ -228,11 +229,13 @@ mod tests {
                                                                value: "great".to_string()}],
                                                     string_vec!["good", "morning"])]);
     }
+
+    #[test]
     fn parses_attribute_block() {
         let output = from_str("hello world=\"great day\":\n  good\n  morning");
         assert_eq!(output, vec![Elem::from_ta_at_cob("hello",
                                                      vec![Attr{ name: "world".to_string(),
-                                                                value: "great".to_string()}],
+                                                                value: "great day".to_string()}],
                                                      string_vec!["good", "morning"])]);
     }
 }

@@ -1,11 +1,9 @@
 #![allow(dead_code)] // TODO remove
-mod parser;
-mod renderer;
-mod util;
 
 use std::collections::BTreeMap;
 
-use parser::ast;
+use foolhtml_shared::parser::ast;
+use foolhtml_shared::renderer;
 
 pub fn render_template_str(input: &str, values: &BTreeMap<&str, &str>) -> String {
     let mut html = render_static_template_str(input);

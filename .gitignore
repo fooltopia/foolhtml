@@ -1,4 +1,7 @@
-/target
+target
+foolhtml/target
+foolhtml_derive/target
+foolhtml_shared/target
 **/*.rs.bk
 Cargo.lock
 .#*
