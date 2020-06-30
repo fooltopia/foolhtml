@@ -11,6 +11,7 @@ proc-macro = true
 trybuild = "1.0"
 
 [dependencies]
+foolhtml_shared = { path = "../foolhtml_shared", version = "*" }
 syn = "1.0"
 quote = "1.0"
 proc-macro2 = "1.0"

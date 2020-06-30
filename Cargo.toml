@@ -3,4 +3,5 @@ members = [
 "foolhtml",
 "foolhtml_derive",
 "foolhtml_shared",
+"testing",
 ]

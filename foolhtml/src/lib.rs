@@ -5,6 +5,13 @@ use std::collections::BTreeMap;
 use foolhtml_shared::parser::ast;
 use foolhtml_shared::renderer;
 
+pub use foolhtml_derive::Template;
+
+//Trait for rendering the template. It's usually derived.
+pub trait Template {
+    fn render(&self) -> String;
+}
+
 pub fn render_template_str(input: &str, values: &BTreeMap<&str, &str>) -> String {
     let mut html = render_static_template_str(input);
     for (k,v) in values {
