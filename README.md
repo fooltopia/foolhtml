@@ -83,7 +83,7 @@ head
                      * to be assigned a value in every child template. */
 body
   >navbar //Include another template that doesn't know about the parent template.
-  <=child /* Can be used only once per template. This template
+  =>child /* Can be used only once per template. This template
            * needs to assign a value to all parent variables */
 ```
 Navigation Bar (navbar):
@@ -94,8 +94,8 @@ nav
 ````
 Child Template (child):
 ```
->!parent // Specify the name of the parent template.
->pv title Awesome Page //Set the value of the "title" variable in the parent template
+<!parent // Specify the name of the parent template.
+<pv title Awesome Page //Set the value of the "title" variable in the parent template
 div#content
   h1 Awesome Page
 ```
