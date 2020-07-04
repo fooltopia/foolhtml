@@ -1,14 +1,19 @@
 use std::fmt;
 
-#[non_exhaustive] //TODO remove once stable
 #[derive(PartialEq, Eq, Debug, Clone)]
+pub enum Node {
+    ELEM(Elem),
+}
+
+#[non_exhaustive] //TODO remove once stable
+#[derive(Default, PartialEq, Eq, Debug, Clone)]
 pub struct Elem {
     pub tag: String,
     pub id: Option<String>,
     pub classes: Option<Vec<String>>,
     pub attr: Option<Vec<Attr>>,
     pub cont: Option<Cont>,
-    pub children: Option<Vec<Elem>>,
+    pub children: Option<Vec<Node>>,
 }
 
 #[derive(PartialEq, Eq, Debug, Clone)]
@@ -24,19 +29,6 @@ pub enum Cont {
 }
 
 impl<'a> Elem {
-
-    ///Creates an empty element 
-    pub fn default() -> Elem {
-        Elem {
-            tag: String::from(""),
-            cont: None,
-            id: None,
-            classes: None,
-            attr: None,
-            children: None,
-        }
-    }
-
     ///Creates an element from a tag
     pub fn from_ta(tag: &str) -> Elem {
         Elem {
@@ -63,7 +55,7 @@ impl<'a> Elem {
         }
     }
     ///Creates an element from a tag and child elements
-    pub fn from_ta_ch(tag: &str, children: Vec<Elem>) -> Elem {
+    pub fn from_ta_ch(tag: &str, children: Vec<Node>) -> Elem {
         Elem {
             tag: String::from(tag),
             children: Some(children),
@@ -129,7 +121,7 @@ impl<'a> Elem {
     }
 
     ///Creates an element from a tag, attr, and children
-    pub fn from_ta_at_ch(tag: &str,  attributes: Vec<Attr>, children: Vec<Elem>) -> Elem {
+    pub fn from_ta_at_ch(tag: &str,  attributes: Vec<Attr>, children: Vec<Node>) -> Elem {
         Elem {
             tag: String::from(tag),
             attr: Some(attributes),

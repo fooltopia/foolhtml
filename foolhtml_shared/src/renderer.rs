@@ -1,6 +1,6 @@
-use crate::parser::ast_types::{Elem, Cont};
+use crate::parser::ast_types::{Node, Cont};
 
-pub fn render(input: Vec<Elem>) -> String {
+pub fn render(input: Vec<Node>) -> String {
     let mut result = String::new();
     for elem in input{
         let rendered_el = render_elem(&elem);
@@ -9,10 +9,11 @@ pub fn render(input: Vec<Elem>) -> String {
     result
 }
 
-fn render_elem(elem: &Elem) -> String {
+fn render_elem(node: &Node) -> String {
     let mut result = String::new();
     let mut opening = String::new();
     let mut content = String::new();
+    let elem = match node { Node::ELEM(el) => el, };
 
     opening.push_str(&elem.tag);
 
@@ -54,77 +55,78 @@ fn render_cont(cont: &Cont) -> String {
             b.join("<br>")
         }
     }
-    
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::parser::ast_types::Attr;
-    use crate::string_vec;
+    use crate::parser::ast_types::{Elem, Attr};
+    use crate::{string_vec, node_el_vec};
     use super::*;
+
+    macro_rules! test_elems {
+        ([ $($input:expr),+ ], $expected:literal ) => {
+            assert_eq!(render(vec![$(Node::ELEM($input)),+]), $expected);
+        }
+    }
 
     #[test]
     fn renders_simple_tag() {
-        let output = render(vec![Elem::from_ta("hello")]);
-        assert_eq!(output, "<hello />");
+        test_elems!([Elem::from_ta("hello")], "<hello />");
     }
+
     #[test]
     fn renders_two_tags() {
-        let output = render(vec![Elem::from_ta("hello"),
-                             Elem::from_ta("world")]);
-        assert_eq!(output, "<hello /><world />");
+        test_elems!([Elem::from_ta("hello"),
+                     Elem::from_ta("world")], "<hello /><world />");
     }
 
     #[test]
     fn renders_tag_cont() {
-        let output = render(vec![Elem::from_ta_col("hello", "world")]);
-        assert_eq!(output, "<hello>world</hello>")
+        test_elems!([Elem::from_ta_col("hello", "world")], "<hello>world</hello>");
     }
 
     #[test]
     fn renders_tag_children() {
-        let output = render(vec![Elem::from_ta_ch("hello", vec![Elem::from_ta("world")])]);
-        assert_eq!(output, "<hello><world /></hello>")
+        test_elems!([Elem::from_ta_ch("hello", node_el_vec![Elem::from_ta("world")])],
+                    "<hello><world /></hello>");
     }
 
     #[test]
     fn renders_id() {
-        let output = render(vec![Elem::from_ta_id("hello", "world")]);
-        assert_eq!(output, "<hello id=\"world\" />")
+        test_elems!([Elem::from_ta_id("hello", "world")], "<hello id=\"world\" />");
     }
 
     #[test]
     fn renders_classes() {
-        let output = render(vec![Elem::from_ta_cl("hello",string_vec!["world", "universe"])]);
-        assert_eq!(output, "<hello class=\"world universe\" />")
+        test_elems!([Elem::from_ta_cl("hello",string_vec!["world", "universe"])],
+                    "<hello class=\"world universe\" />");
     }
 
     #[test]
     fn renders_attributes() {
-        let output = render(vec![Elem::from_ta_at("hello",
-                                                  vec![Attr{ name: "world".to_string(),
-                                                             value: "great".to_string()},
-                                                       Attr{ name: "sun".to_string(),
-                                                             value: "shining".to_string()}])]);
-        assert_eq!(output, "<hello world=\"great\" sun=\"shining\" />")
+        test_elems!([Elem::from_ta_at("hello",
+                                      vec![Attr{ name: "world".to_string(),
+                                                 value: "great".to_string()},
+                                           Attr{ name: "sun".to_string(),
+                                                 value: "shining".to_string()}])],
+                    "<hello world=\"great\" sun=\"shining\" />");
     }
 
     #[test]
     fn renders_single_quoted() {
-        let output = render(vec![Elem::from_ta_at("img",
-                                                  vec![Attr{ name: "Mr".to_string(),
-                                                             value: "Thomas \"Neo\" Anderson".to_string()}])]);
-        assert_eq!(output, "<img Mr='Thomas \"Neo\" Anderson' />")
+        test_elems!([Elem::from_ta_at("img",
+                                      vec![Attr{ name: "Mr".to_string(),
+                                                 value: "Thomas \"Neo\" Anderson".to_string()}])],
+                    "<img Mr='Thomas \"Neo\" Anderson' />");
     }
     #[test]
     fn renders_attributes_on_children() {
-        let output = render(vec![Elem::from_ta_at_ch("hello",
-                                                     vec![Attr{ name: "world".to_string(),
-                                                             value: "great".to_string()}],
-                                                     vec![Elem::from_ta_at("how",
-                                                                           vec![Attr{ name: "are".to_string(),
-                                                                                      value: "you?".to_string()}])])]);
-
-        assert_eq!(output, "<hello world=\"great\"><how are=\"you?\" /></hello>")
+        test_elems!([Elem::from_ta_at_ch("hello",
+                                         vec![Attr{ name: "world".to_string(),
+                                                    value: "great".to_string()}],
+                                         node_el_vec![Elem::from_ta_at("how",
+                                                                       vec![Attr{ name: "are".to_string(),
+                                                                                  value: "you?".to_string()}])])],
+                    "<hello world=\"great\"><how are=\"you?\" /></hello>");
     }
 }

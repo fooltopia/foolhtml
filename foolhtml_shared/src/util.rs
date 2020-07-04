@@ -9,3 +9,10 @@ macro_rules! string_vec {
         vec![$($x.to_string(),)*];
     }
 }
+
+#[macro_export]
+macro_rules! node_el_vec {
+    ($($elem:expr),+) => {
+        vec![$(Node::ELEM($elem)),+]
+    }
+}
