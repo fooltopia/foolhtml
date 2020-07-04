@@ -1,2 +1,2 @@
 pub mod ast;
-pub mod data_structs;
+pub mod ast_types;

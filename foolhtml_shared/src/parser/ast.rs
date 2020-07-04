@@ -6,7 +6,7 @@ use pest::iterators::Pair;
 #[grammar = "parser/foolhtml.pest"]
 struct SHParser;
 
-use super::data_structs::{Elem,Cont, Attr};
+use super::ast_types::{Elem,Cont, Attr};
 
 pub fn from_str(input: &str) -> Vec<Elem>{
     generate(input)

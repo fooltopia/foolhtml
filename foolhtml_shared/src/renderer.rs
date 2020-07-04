@@ -1,4 +1,4 @@
-use crate::parser::data_structs::{Elem, Cont};
+use crate::parser::ast_types::{Elem, Cont};
 
 pub fn render(input: Vec<Elem>) -> String {
     let mut result = String::new();
@@ -59,7 +59,7 @@ fn render_cont(cont: &Cont) -> String {
 
 #[cfg(test)]
 mod tests {
-    use crate::parser::data_structs::Attr;
+    use crate::parser::ast_types::Attr;
     use crate::string_vec;
     use super::*;
 
