@@ -34,3 +34,14 @@ fn handles_lifetimes() {
     let t = Title{arg: "hello"};
     assert_eq!(t.render(), "<h1>hello</h1>");
 }
+
+#[test]
+fn reads_fhtml_file() {
+    #[derive(Template)]
+    #[template(path = "testing/templates/basic_tag.fhtml")]
+    struct Title<'a> {
+        name: &'a str,
+    }
+    let t = Title{name: "World"};
+    assert_eq!(t.render(), "<h1>Hello World</h1>");
+}

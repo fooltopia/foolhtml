@@ -35,31 +35,49 @@ struct TemplateConfig {
 }
 
 fn get_template_config(attrs: Vec<syn::Attribute>) -> TemplateConfig {
+    let ident_val_pairs = get_identifier_value_pairs(attrs);
+    let mut config = TemplateConfig::default();
+    for (ident, val) in ident_val_pairs {
+        match ident {
+            i if i == "source" =>  config.source = val, 
+            i if i == "path" =>  config.source = load_template_file(&val),
+            _ => unimplemented!(),
+        };
+    }
+    config
+}
+
+fn load_template_file(path: &str) -> String {
+    use std::io::Read;
+    let mut file = std::fs::File::open(path)
+        .expect(&format!("Couldn't open template file: {}", path));
+    let mut contents = String::new();
+    file.read_to_string(&mut contents).unwrap();
+    contents
+}
+
+fn get_identifier_value_pairs(attrs: Vec<syn::Attribute>) -> Vec::<(String, String)> {
     let mut ident_val_pairs = Vec::<(String, String)>::new();
     for attr in attrs {
         let mut ident = String::default();
         let mut val = String::default();
         for token_tree in attr.tokens {
-             match token_tree {
-                 proc_macro2::TokenTree::Group(gp) => {
-                     for token in  gp.stream() {
-                         match token {
-                             proc_macro2::TokenTree::Ident(i) => ident =  i.to_string(),
-                             proc_macro2::TokenTree::Literal(l) => val = drop_quotes(l.to_string()),
-                             _ => (),
-                         }
-                     }
-                 },
-                 _other => unreachable!(), 
-             }
+            match token_tree {
+                proc_macro2::TokenTree::Group(gp) => {
+                    for token in  gp.stream() {
+                        match token {
+                            proc_macro2::TokenTree::Ident(i) => ident = i.to_string(),
+                            proc_macro2::TokenTree::Literal(l) => val = drop_quotes(l.to_string()),
+                            _ => (),
+                        }
+                    }
+                },
+                _other => unreachable!(), 
+            }
         }
         ident_val_pairs.push((ident, val));
     }
-    let mut config = TemplateConfig::default();
-    for (ident, val) in ident_val_pairs {
-        if ident == "source" { config.source = val; }
-    }
-    config
+    ident_val_pairs
 }
 
 ///Remove the first and last character of the string
