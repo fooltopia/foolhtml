@@ -6,7 +6,7 @@ use pest::iterators::Pair;
 #[grammar = "parser/foolhtml.pest"]
 struct SHParser;
 
-use super::ast_types::{Node, Elem, Cont, Attr};
+use super::ast_types::{Node, Elem, Include, Cont, Attr};
 
 pub fn from_str(input: &str) -> Vec<Node>{
     generate(input)
@@ -14,17 +14,33 @@ pub fn from_str(input: &str) -> Vec<Node>{
 
 fn generate(input: &str) -> Vec<Node> {
     let mut ast : Vec<Node> = Vec::new();
+    //TODO make sure parse_res isn't empty or throw error
     let parse_res = SHParser::parse(Rule::html, input).expect("unsuccessful parse");
-    for item in parse_res {
-        let new_node = gen_node(item);
-        ast.push(new_node)
+    for node in parse_res {
+        ast.push(gen_node(node))
     }
     ast
 }
 
-fn gen_node(val: Pair<Rule>) -> Node {
-    Node::ELEM(gen_elem(val))
+fn gen_node(node: Pair<Rule>) -> Node {
+    match node.as_rule() {
+        Rule::el_node => Node::ELEM(gen_elem(node)),
+        Rule::include_node => Node::INCLUDE(gen_include(node)),
+        _ => unreachable!()
+    }
 }
+
+fn gen_include(val: Pair<Rule>) -> Include {
+    let mut include = Include::default();
+    for val in val.into_inner() {
+        match val.as_rule() {
+            Rule::include_path => include = Include { path: val.as_str().to_string() },
+            _ => unreachable!()
+        }
+    }
+    include
+}
+
 
 fn gen_elem(val: Pair<Rule>) -> Elem {
     let mut new_elem = Elem::default();
@@ -36,7 +52,7 @@ fn gen_elem(val: Pair<Rule>) -> Elem {
             Rule::attr => add_attr(&mut new_elem, val),
             Rule::cont_inline => new_elem.cont = Some(Cont::LINE(String::from(val.as_str()))),
             Rule::cont_block_line => add_cont_block_line(&mut new_elem, &val.as_str()),
-            Rule::el => add_child_elems(&mut new_elem, val),
+            Rule::el_node => add_child_elems(&mut new_elem, val),
             _ => unreachable!(),
         }
     }
@@ -230,5 +246,11 @@ mod tests {
                                               vec![Attr{ name: "world".to_string(),
                                                          value: "great day".to_string()}],
                                               string_vec!["good", "morning"])]);
+    }
+
+    #[test]
+    fn parses_include() {
+        let output = from_str(">my/include");
+        assert_eq!(output, vec![Node::INCLUDE(Include{ path: "my/include".into() })]);
     }
 }

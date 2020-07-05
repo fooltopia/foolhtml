@@ -1,9 +1,11 @@
-html = _{ SOI ~ el+ ~ eoi }
+html = _{ SOI ~ node+ ~ eoi }
 
-el = { el_line | el_block }
-el_line = _{ tag ~ id? ~ class* ~ (whitesp ~ attr)* ~(whitesp ~ cont_inline)? ~ ("\n" | eoi) ~ child_el* }
+node = _{ el_node | include_node }
+
+el_node = { el_line | el_block }
+el_line = _{ tag ~ id? ~ class* ~ (whitesp ~ attr)* ~(whitesp ~ cont_inline)? ~ ("\n" | eoi) ~ child_node* }
 el_block = _{ tag ~ id? ~ class* ~ (whitesp ~ attr)* ~ ":" ~ whitesp* ~ "\n" ~ cont_block+}
-child_el = _{ PEEK_ALL ~ PUSH(indentation) ~ el ~ DROP }
+child_node = _{ PEEK_ALL ~ PUSH(indentation) ~ node ~ DROP }
 cont_block = _{ PEEK_ALL ~ PUSH(indentation) ~ cont_block_line~ ("\n" | eoi) ~ DROP }
 cont_block_line = {(!("\n") ~ ANY)+}
 cont_inline = {(!("\n") ~ ANY)+ }
@@ -22,11 +24,17 @@ quoted_attr_val = _{ PUSH(opening_quote) ~ q_attr_val ~ POP}
 naked_attr_val = _{ n_attr_val }
 q_attr_val = { (!(PEEK) ~ ANY)+ }
 n_attr_val = { (ASCII_ALPHA | ASCII_DIGIT | "-")+ }
-opening_quote = _{ "\"" | "'" }
 
 ident = _{ (ASCII_ALPHA_LOWER | ASCII_DIGIT) ~ (ASCII_ALPHA_LOWER |ASCII_DIGIT | "-")*}
+
+include_node = {">" ~ include_path}
+include_path = { (ASCII_ALPHA_LOWER | ASCII_DIGIT) ~ 
+                 (ASCII_ALPHA_LOWER |ASCII_DIGIT | "-" | "_" | "/" | "\\")* }
+
 
 whitesp = _{ SPACE_SEPARATOR+ }
 eol = _{ ("\n" | eoi) }
 eoi = _{ !ANY }
 indentation = _{ "  " }
+opening_quote = _{ "\"" | "'" }
+              

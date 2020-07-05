@@ -13,7 +13,10 @@ fn render_elem(node: &Node) -> String {
     let mut result = String::new();
     let mut opening = String::new();
     let mut content = String::new();
-    let elem = match node { Node::ELEM(el) => el, };
+    let elem = match node {
+        Node::ELEM(el) => el,
+        _ => unimplemented!(),
+    };
 
     opening.push_str(&elem.tag);
 

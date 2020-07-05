@@ -3,6 +3,7 @@ use std::fmt;
 #[derive(PartialEq, Eq, Debug, Clone)]
 pub enum Node {
     ELEM(Elem),
+    INCLUDE(Include),
 }
 
 #[non_exhaustive] //TODO remove once stable
@@ -14,6 +15,11 @@ pub struct Elem {
     pub attr: Option<Vec<Attr>>,
     pub cont: Option<Cont>,
     pub children: Option<Vec<Node>>,
+}
+
+#[derive(Default, PartialEq, Eq, Debug, Clone)]
+pub struct Include {
+    pub path: String,
 }
 
 #[derive(PartialEq, Eq, Debug, Clone)]
