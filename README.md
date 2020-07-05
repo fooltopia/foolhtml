@@ -1,5 +1,5 @@
 # FoolHTML
-A indentation based html template for Rust inspired by [Slim](http://slim-lang.com/)
+A indentation based html template for Rust inspired by [Slim](http://slim-lang.com/) and [Askama](https://github.com/djc/askama)
 
 It uses indentation to determine the scope of elements.
 
@@ -73,6 +73,32 @@ renders to
 ```
 <img class="portrait" url="images/anderson.jpg" alt='Thomas "Neo" Anderson' width="400" />
 ```
+### Dynamic Content
+You can set the values of variables inside your template via derive macros.
+Let's say you have a simple foolhtml file called `basic_tag.fhtml` with the following content:
+```
+h1 Hello {{name}}
+```
+To render it, you need to provide a value for the `name` variable. You do that by creating a struct with a field called name and a type that implements the `Display` trait for example a `String`.
+
+Then you derive the Template trait for the struct and set the path to the template file as its parameter. 
+
+```Rust
+#[derive(Template)]
+#[template(path = "templates/basic_tag.fhtml")]
+struct Title<'a> {
+    name: &'a str,
+}
+```
+Next, you create an instance of the struct where you set the variable's value.
+```
+let t = Title{ name: "World" };
+```
+To generate the html, you simple call the `render` function on your struct. 
+```
+assert_eq!(t.render(), "<h1>Hello World</h1>");
+```
+
 ### Partial Templates (planned)
 Here's an example of a partial template using both parent-child relationships and includes.
 
