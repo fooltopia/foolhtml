@@ -1,6 +1,6 @@
 use proc_macro2::TokenStream;
 use quote::{quote};
-use foolhtml_shared::{renderer, parser::ast};
+use foolhtml_shared::renderer;
 use syn;
 
 #[proc_macro_derive(Template, attributes(template))]
@@ -12,9 +12,11 @@ pub fn derive_template(input: proc_macro::TokenStream) -> proc_macro::TokenStrea
     let args = gen_format_args(fields);
 
     let config = get_template_config(input.attrs);
-    let source = config.source;
-    let ast = ast::from_str(&source);
-    let mut html = renderer::render(ast);
+    let mut html = match config.input.unwrap() { //TODO Error Handling
+        InputType::PATH(path) => renderer::render_file(&path),
+        InputType::SOURCE(string) => renderer::render_source(&string),
+    };
+
     //TODO find better way to handle variables and allow single {} in content
     html = html.replace("{{", "{");
     html = html.replace("}}", "}");
@@ -29,9 +31,16 @@ pub fn derive_template(input: proc_macro::TokenStream) -> proc_macro::TokenStrea
     tokens.into()
 }
 
+
+#[derive(Debug)]
+enum InputType {
+    PATH(String),
+    SOURCE(String),
+
+}
 #[derive(Debug, Default)]
 struct TemplateConfig {
-    source: String,
+    input: Option<InputType>,
 }
 
 fn get_template_config(attrs: Vec<syn::Attribute>) -> TemplateConfig {
@@ -39,21 +48,12 @@ fn get_template_config(attrs: Vec<syn::Attribute>) -> TemplateConfig {
     let mut config = TemplateConfig::default();
     for (ident, val) in ident_val_pairs {
         match ident {
-            i if i == "source" =>  config.source = val, 
-            i if i == "path" =>  config.source = load_template_file(&val),
+            i if i == "source" =>  config.input = Some(InputType::SOURCE(val)),
+            i if i == "path" =>  config.input = Some(InputType::PATH(val)),
             _ => unimplemented!(),
         };
     }
     config
-}
-
-fn load_template_file(path: &str) -> String {
-    use std::io::Read;
-    let mut file = std::fs::File::open(path)
-        .expect(&format!("Couldn't open template file: {}", path));
-    let mut contents = String::new();
-    file.read_to_string(&mut contents).unwrap();
-    contents
 }
 
 fn get_identifier_value_pairs(attrs: Vec<syn::Attribute>) -> Vec::<(String, String)> {

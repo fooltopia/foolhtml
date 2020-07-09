@@ -1,13 +1,34 @@
+use crate::parser;
 use crate::parser::ast_types::{Node, Cont};
 
-pub fn render(input: Vec<Node>) -> String {
+pub fn render_source(source: &str) -> String {
+    let input = parser::ast::from_str(source);
+    render_ast(input)
+}
+
+pub fn render_file(path: &str) -> String {
+    let source = load_template_file(path);
+    render_source(&source)
+}
+
+fn render_ast(ast: Vec<Node>) -> String {
     let mut result = String::new();
-    for elem in input{
+    for elem in ast{
         let rendered_el = render_elem(&elem);
         result.push_str(&rendered_el);
     }
     result
 }
+
+fn load_template_file(path: &str) -> String {
+    use std::io::Read;
+    let mut file = std::fs::File::open(path)
+        .expect(&format!("Couldn't open template file: {}", path));
+    let mut contents = String::new();
+    file.read_to_string(&mut contents).unwrap();
+    contents
+}
+
 
 fn render_elem(node: &Node) -> String {
     let mut result = String::new();
@@ -68,7 +89,7 @@ mod tests {
 
     macro_rules! test_elems {
         ([ $($input:expr),+ ], $expected:literal ) => {
-            assert_eq!(render(vec![$(Node::ELEM($input)),+]), $expected);
+            assert_eq!(render_ast(vec![$(Node::ELEM($input)),+]), $expected);
         }
     }
 

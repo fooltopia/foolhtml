@@ -2,7 +2,6 @@
 
 use std::collections::BTreeMap;
 
-use foolhtml_shared::parser::ast;
 use foolhtml_shared::renderer;
 
 pub use foolhtml_derive::Template;
@@ -22,8 +21,7 @@ pub fn render_template_str(input: &str, values: &BTreeMap<&str, &str>) -> String
 }
 
 pub fn render_static_template_str(input: &str) -> String {
-    let tree = ast::from_str(input);
-    renderer::render(tree)
+    renderer::render_source(input)
 }
 
 #[cfg(test)]
