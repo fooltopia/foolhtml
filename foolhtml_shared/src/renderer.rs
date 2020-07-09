@@ -13,9 +13,8 @@ pub fn render_file(path: &str) -> String {
 
 fn render_ast(ast: Vec<Node>) -> String {
     let mut result = String::new();
-    for elem in ast{
-        let rendered_el = render_elem(&elem);
-        result.push_str(&rendered_el);
+    for node in ast{
+        result.push_str(&render_node(&node));
     }
     result
 }
@@ -30,7 +29,7 @@ fn load_template_file(path: &str) -> String {
 }
 
 
-fn render_elem(node: &Node) -> String {
+fn render_node(node: &Node) -> String {
     let mut result = String::new();
     let mut opening = String::new();
     let mut content = String::new();
@@ -60,7 +59,7 @@ fn render_elem(node: &Node) -> String {
     }
     if let Some(children) = &elem.children {
         for child in children {
-            content.push_str(&render_elem(child));
+            content.push_str(&render_node(child));
         }
     }
 
