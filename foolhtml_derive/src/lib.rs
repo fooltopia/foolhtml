@@ -1,3 +1,4 @@
+use std::iter::Peekable;
 use proc_macro2::TokenStream;
 use quote::{quote};
 use foolhtml_shared::renderer;
@@ -17,9 +18,7 @@ pub fn derive_template(input: proc_macro::TokenStream) -> proc_macro::TokenStrea
         InputType::SOURCE(string) => renderer::render_source(&string),
     };
 
-    //TODO find better way to handle variables and allow single {} in content
-    html = html.replace("{{", "{");
-    html = html.replace("}}", "}");
+    html = reformat_braces(&html);
 
     let tokens = quote!{
         impl#generics Template for #name#generics {
@@ -30,6 +29,7 @@ pub fn derive_template(input: proc_macro::TokenStream) -> proc_macro::TokenStrea
     };
     tokens.into()
 }
+
 
 
 #[derive(Debug)]
@@ -109,4 +109,147 @@ fn gen_format_args(fields: &syn::FieldsNamed) -> TokenStream {
         }
     });
     quote!{ #( #recurse ),* }
+}
+
+///Turn fhtml variables into format! variables
+///and escape all other curly braces.
+fn reformat_braces(source: &str) -> String {
+    //TODO find better way to handle variables and allow single {} in content
+    let mut res = String::with_capacity(source.len());
+    let mut iter = source.chars().peekable();
+    while let Some(c) = iter.next() {
+        match c {
+            '{' => res.push_str(&classify_opening_brace(&mut iter)),
+            '}' => res.push_str(&classify_closing_brace(&mut iter)),
+            _ => res.push(c),
+        }
+    };
+    res
+}
+
+//TODO opening and closing brace are essential same function -> create macro?
+fn classify_opening_brace<I:Iterator<Item=char>>(mut iter :&mut Peekable<I>) -> String {
+    let mut res = String::new();
+    match iter.peek() {
+        Some('{') => { iter.next(); res.push_str(&classify_double_opening_brace(&mut iter)); },
+        _ =>  res.push_str("{{") , //one brace becomes two
+    }
+    res
+}
+
+fn classify_double_opening_brace<I:Iterator<Item=char>>(mut iter :&mut Peekable<I>) -> String {
+    let mut res = String::new();
+    match iter.peek() {
+        Some('{') => { res.push_str("{{{{"); //already saw two braces; this is the third
+                       res.push_str(&continue_double_opening_braces(&mut iter)) },
+        _ => { println!("double brace"); res.push_str("{"); return res }, // was a double brace, return single
+    }
+    res
+}
+
+fn continue_double_opening_braces<I:Iterator<Item=char>>(iter :&mut Peekable<I>) -> String {
+    let mut res = String::new();
+    while let Some(c) = iter.next() {
+        match c {
+            '{' => res.push_str("{{"),
+            _ => break,
+        }
+    }
+    res
+}
+
+
+//TODO closing and closing brace are essential same function -> create macro?
+fn classify_closing_brace<I:Iterator<Item=char>>(mut iter :&mut Peekable<I>) -> String {
+    let mut res = String::new();
+    match iter.peek() {
+        Some('}') => { iter.next(); res.push_str(&classify_double_closing_brace(&mut iter)); },
+        _ =>  res.push_str("}}") , //one brace becomes two
+    }
+    res
+}
+
+fn classify_double_closing_brace<I:Iterator<Item=char>>(mut iter :&mut Peekable<I>) -> String {
+    let mut res = String::new();
+    match iter.peek() {
+        Some('}') => { res.push_str("}}}}"); //already saw two braces; this is the third
+                       res.push_str(&continue_double_closing_braces(&mut iter)) },
+        _ => { println!("double brace"); res.push_str("}"); return res }, // was a double brace, return single
+    }
+    res
+}
+
+fn continue_double_closing_braces<I:Iterator<Item=char>>(iter :&mut Peekable<I>) -> String {
+    let mut res = String::new();
+    while let Some(c) = iter.next() {
+        match c {
+            '}' => res.push_str("}}"),
+            _ => break,
+        }
+    }
+    res
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::reformat_braces;
+
+    #[test]
+    fn formats_single_opening() {
+        assert_eq!(reformat_braces("{"), "{{");
+    }
+
+    #[test]
+    fn formats_double_opening() {
+        assert_eq!(reformat_braces("{{"), "{");
+    }
+
+    #[test]
+    fn formats_multiple_opening() {
+        assert_eq!(reformat_braces("{{{"), "{{{{{{");
+        assert_eq!(reformat_braces("{{{{"), "{{{{{{{{");
+    }
+
+    #[test]
+    fn formats_single_closing() {
+        assert_eq!(reformat_braces("}"), "}}");
+    }
+
+    #[test]
+    fn formats_double_closing() {
+        assert_eq!(reformat_braces("}}"), "}");
+    }
+
+
+    #[test]
+    fn formats_multiple_closing() {
+        assert_eq!(reformat_braces("}}}"), "}}}}}}");
+        assert_eq!(reformat_braces("}}}}"), "}}}}}}}}");
+    }
+
+    #[test]
+    fn formats_var() {
+        assert_eq!(reformat_braces("{{hello}}"), "{hello}");
+    }
+
+
+    #[test]
+    fn formats_open_close_pair() {
+        assert_eq!(reformat_braces("{}"), "{{}}");
+    }
+
+    // #[test]
+    // fn formats_escaped_double_braces() {
+    //     //remove the '\' and double braces to escape it format!
+    //     assert_eq!(reformat_braces(r#"\{{"#), "{{{{");
+    //     //assert_eq!(reformat_braces("\\}}"), "}}}}")
+    // }
+
+    // #[test]
+    // fn formats_backslash_triple_braces() {
+    //     //the backslash should only be removed on double braces
+    //     assert_eq!(reformat_braces("\\{{{"), "\\{{{{{{");
+    //     assert_eq!(reformat_braces("\\}}}"), "\\}}}}}}")
+    // }
 }
