@@ -174,7 +174,7 @@ fn classify_double_closing_brace<I:Iterator<Item=char>>(mut iter :&mut Peekable<
     match iter.peek() {
         Some('}') => { res.push_str("}}}}"); //already saw two braces; this is the third
                        res.push_str(&continue_double_closing_braces(&mut iter)) },
-        _ => { println!("double brace"); res.push_str("}"); return res }, // was a double brace, return single
+        _ => { res.push_str("}"); return res }, // was a double brace, return single
     }
     res
 }
