@@ -55,8 +55,9 @@ fn render_node(node: &Node) -> String {
     }
 
     if let Some(c) = &elem.cont {
-        content.push_str(&render_cont(c));
+        content.push_str(&render_elem_content(c));
     }
+
     if let Some(children) = &elem.children {
         for child in children {
             content.push_str(&render_node(child));
@@ -68,10 +69,11 @@ fn render_node(node: &Node) -> String {
     } else {
         result.push_str(&format!("<{op}>{co}</{cl}>", op=opening, co=content, cl=elem.tag))
     }
+
     result
 }
 
-fn render_cont(cont: &Cont) -> String {
+fn render_elem_content(cont: &Cont) -> String {
     match cont {
         Cont::LINE(l) => l.to_string(),
         Cont::BLOCK(b) => {
