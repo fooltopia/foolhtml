@@ -119,73 +119,43 @@ fn reformat_braces(source: &str) -> String {
     let mut iter = source.chars().peekable();
     while let Some(c) = iter.next() {
         match c {
-            '{' => res.push_str(&classify_opening_brace(&mut iter)),
-            '}' => res.push_str(&classify_closing_brace(&mut iter)),
+            '{' => res.push_str(&classify_brace("{".to_string(), &mut iter)),
+            '}' => res.push_str(&classify_brace("}".to_string(), &mut iter)),
             _ => res.push(c),
         }
     };
     res
 }
 
-//TODO opening and closing brace are essential same function -> create macro?
-fn classify_opening_brace<I:Iterator<Item=char>>(mut iter :&mut Peekable<I>) -> String {
+fn classify_brace<I:Iterator<Item=char>>(brace_type: String, mut iter :&mut Peekable<I>) -> String {
     let mut res = String::new();
     match iter.peek() {
-        Some('{') => { iter.next(); res.push_str(&classify_double_opening_brace(&mut iter)); },
-        _ =>  res.push_str("{{") , //one brace becomes two
+        Some(c) if c.to_string() == brace_type
+            => { iter.next(); res.push_str(&classify_double_brace(brace_type, &mut iter)); },
+        _ =>  res.push_str(&brace_type.repeat(2)) , //one brace becomes two
     }
     res
 }
 
-fn classify_double_opening_brace<I:Iterator<Item=char>>(mut iter :&mut Peekable<I>) -> String {
+fn classify_double_brace<I:Iterator<Item=char>>(brace_type: String, mut iter :&mut Peekable<I>) -> String {
     let mut res = String::new();
     match iter.peek() {
-        Some('{') => { res.push_str("{{{{"); //already saw two braces; this is the third
-                       res.push_str(&continue_double_opening_braces(&mut iter)) },
-        _ => { println!("double brace"); res.push_str("{"); return res }, // was a double brace, return single
+        Some(c) if c.to_string() == brace_type
+            => { res.push_str(&brace_type.repeat(4)); //already saw two braces; this is the third
+                 res.push_str(&continue_double_braces(brace_type, &mut iter)) },
+        _ => {res.push_str(&brace_type); return res }, // was a double brace, return single
     }
     res
 }
 
-fn continue_double_opening_braces<I:Iterator<Item=char>>(iter :&mut Peekable<I>) -> String {
+fn continue_double_braces<I:Iterator<Item=char>>(brace_type: String, iter :&mut Peekable<I>) -> String {
     let mut res = String::new();
     while let Some(c) = iter.next() {
-        match c {
-            '{' => res.push_str("{{"),
-            _ => break,
-        }
-    }
-    res
-}
-
-
-//TODO closing and closing brace are essential same function -> create macro?
-fn classify_closing_brace<I:Iterator<Item=char>>(mut iter :&mut Peekable<I>) -> String {
-    let mut res = String::new();
-    match iter.peek() {
-        Some('}') => { iter.next(); res.push_str(&classify_double_closing_brace(&mut iter)); },
-        _ =>  res.push_str("}}") , //one brace becomes two
-    }
-    res
-}
-
-fn classify_double_closing_brace<I:Iterator<Item=char>>(mut iter :&mut Peekable<I>) -> String {
-    let mut res = String::new();
-    match iter.peek() {
-        Some('}') => { res.push_str("}}}}"); //already saw two braces; this is the third
-                       res.push_str(&continue_double_closing_braces(&mut iter)) },
-        _ => { res.push_str("}"); return res }, // was a double brace, return single
-    }
-    res
-}
-
-fn continue_double_closing_braces<I:Iterator<Item=char>>(iter :&mut Peekable<I>) -> String {
-    let mut res = String::new();
-    while let Some(c) = iter.next() {
-        match c {
-            '}' => res.push_str("}}"),
-            _ => break,
-        }
+            if c.to_string() == brace_type{
+                res.push_str(&brace_type.repeat(2));
+            } else {
+            break;
+            }
     }
     res
 }
