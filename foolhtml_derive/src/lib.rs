@@ -14,7 +14,7 @@ pub fn derive_template(input: proc_macro::TokenStream) -> proc_macro::TokenStrea
 
     let config = get_template_config(input.attrs);
     let mut html = match config.input.unwrap() { //TODO Error Handling
-        InputType::PATH(path) => renderer::render_file(&path),
+        InputType::PATH(path) => renderer::render_path(&path),
         InputType::SOURCE(string) => renderer::render_source(&string),
     };
 

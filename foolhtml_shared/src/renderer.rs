@@ -1,13 +1,17 @@
+use template_manager::TemplateManager;
+
 use crate::parser;
 use crate::parser::ast_types::{Node, Cont};
+use crate::template_manager;
 
 pub fn render_source(source: &str) -> String {
     let input = parser::ast::from_str(source);
     render_ast(input)
 }
 
-pub fn render_file(path: &str) -> String {
-    let source = load_template_file(path);
+pub fn render_path(path: &str) -> String {
+    let mut tm = TemplateManager::default();
+    let source = tm.get(path).expect(&format!("Template Manager couldn't find path: {}", path));
     render_source(&source)
 }
 
@@ -17,15 +21,6 @@ fn render_ast(ast: Vec<Node>) -> String {
         result.push_str(&render_node(&node));
     }
     result
-}
-
-fn load_template_file(path: &str) -> String {
-    use std::io::Read;
-    let mut file = std::fs::File::open(path)
-        .expect(&format!("Couldn't open template file: {}", path));
-    let mut contents = String::new();
-    file.read_to_string(&mut contents).unwrap();
-    contents
 }
 
 
