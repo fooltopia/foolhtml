@@ -34,6 +34,8 @@ pub enum Cont {
     BLOCK(Vec<String>),
 }
 
+///Implement some helpers for testing
+#[cfg(test)]
 impl<'a> Elem {
     ///Creates an element from a tag
     pub fn from_ta(tag: &str) -> Elem {
