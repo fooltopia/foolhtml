@@ -99,7 +99,12 @@ impl<'a> Elem {
         }
     }
     ///Creates an element from a tag, ids, classes, and content block
-    pub fn from_ta_id_cl_cob(tag: &str, id: &str, classes: Vec<String>, content: Vec<String>) -> Elem {
+    pub fn from_ta_id_cl_cob(
+        tag: &str,
+        id: &str,
+        classes: Vec<String>,
+        content: Vec<String>,
+    ) -> Elem {
         Elem {
             tag: String::from(tag),
             cont: Some(Cont::BLOCK(content)),
@@ -109,9 +114,8 @@ impl<'a> Elem {
         }
     }
 
-
     ///Creates an element from a tag, attr, and content block
-    pub fn from_ta_at_cob(tag: &str,  attributes: Vec<Attr>, content: Vec<String>) -> Elem {
+    pub fn from_ta_at_cob(tag: &str, attributes: Vec<Attr>, content: Vec<String>) -> Elem {
         Elem {
             tag: String::from(tag),
             cont: Some(Cont::BLOCK(content)),
@@ -120,7 +124,7 @@ impl<'a> Elem {
         }
     }
     ///Creates an element from a tag, and attr
-    pub fn from_ta_at(tag: &str,  attributes: Vec<Attr>) -> Elem {
+    pub fn from_ta_at(tag: &str, attributes: Vec<Attr>) -> Elem {
         Elem {
             tag: String::from(tag),
             attr: Some(attributes),
@@ -129,7 +133,7 @@ impl<'a> Elem {
     }
 
     ///Creates an element from a tag, attr, and children
-    pub fn from_ta_at_ch(tag: &str,  attributes: Vec<Attr>, children: Vec<Node>) -> Elem {
+    pub fn from_ta_at_ch(tag: &str, attributes: Vec<Attr>, children: Vec<Node>) -> Elem {
         Elem {
             tag: String::from(tag),
             attr: Some(attributes),
@@ -141,16 +145,19 @@ impl<'a> Elem {
 
 impl Attr {
     pub fn default() -> Attr {
-        Attr {name: String::new(), value: String::new()}
+        Attr {
+            name: String::new(),
+            value: String::new(),
+        }
     }
 }
 
 impl fmt::Display for Attr {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         if self.value.contains('\"') {
-            write!(f, r#"{name}='{val}'"#, name=self.name, val=self.value)
+            write!(f, r#"{name}='{val}'"#, name = self.name, val = self.value)
         } else {
-            write!(f, r#"{name}="{val}""#, name=self.name, val=self.value)
+            write!(f, r#"{name}="{val}""#, name = self.name, val = self.value)
         }
     }
 }
@@ -159,12 +166,13 @@ impl fmt::Display for Cont {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Cont::LINE(text) => write!(f, "{}", text),
-            Cont::BLOCK(texts) => {let mut res = String::new();
-                                  for t in texts {
-                                      res.push_str(t);
-                                      res.push('\n');
-                                  }
-                                  write!(f, "{}", res)
+            Cont::BLOCK(texts) => {
+                let mut res = String::new();
+                for t in texts {
+                    res.push_str(t);
+                    res.push('\n');
+                }
+                write!(f, "{}", res)
             }
         }
     }

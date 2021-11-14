@@ -1,17 +1,18 @@
-use std::{collections::BTreeMap};
+use std::collections::BTreeMap;
 
 ///Holds a map from paths to html templates
 ///If you request a template via its path/name,
 ///and it's not in the map, the manager will look
-///for a file at the path relative to the working directory. 
+///for a file at the path relative to the working directory.
 #[derive(Debug, Default)]
 pub struct TemplateManager {
-    templates: BTreeMap<String, String>
+    templates: BTreeMap<String, String>,
 }
 
 impl TemplateManager {
     pub fn add(self: &mut Self, path: String, template: String) {
-        self.templates.insert(path.to_string(), template.to_string());
+        self.templates
+            .insert(path.to_string(), template.to_string());
     }
 
     pub fn get(self: &mut Self, path: &str) -> Result<String> {
@@ -25,11 +26,12 @@ impl TemplateManager {
 fn read_template_file(path: &str) -> Result<String> {
     use std::io::Read;
     match std::fs::File::open(path) {
-        Ok(mut file) =>{ let mut contents = String::new();
-                     file.read_to_string(&mut contents).unwrap();
-                     Ok(contents) }
-        Err(_) => Err(TemplateManagerError::TemplateNotFound)
-
+        Ok(mut file) => {
+            let mut contents = String::new();
+            file.read_to_string(&mut contents).unwrap();
+            Ok(contents)
+        }
+        Err(_) => Err(TemplateManagerError::TemplateNotFound),
     }
 }
 
@@ -59,10 +61,9 @@ mod tests {
 
     #[test]
     fn returns_error_on_invalid_path() {
-        let mut manager= TemplateManager::default();
+        let mut manager = TemplateManager::default();
         let expected = TemplateManagerError::TemplateNotFound;
         let result = manager.get("hello/").err().unwrap();
         assert_eq!(expected, result);
     }
-
 }

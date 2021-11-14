@@ -13,7 +13,7 @@ pub trait Template {
 
 pub fn render_template_str(input: &str, values: &BTreeMap<&str, &str>) -> String {
     let mut html = render_static_template_str(input);
-    for (k,v) in values {
+    for (k, v) in values {
         let search = format!("{{{{{}}}}}", k);
         html = html.replace(&search, v);
     }
@@ -55,7 +55,10 @@ mod tests {
     #[test]
     fn renders_tag_tag_id_attributes_content() {
         let output = render_static_template_str("div#title.big lang=en How are you?");
-        assert_eq!(output, "<div id=\"title\" class=\"big\" lang=\"en\">How are you?</div>")
+        assert_eq!(
+            output,
+            "<div id=\"title\" class=\"big\" lang=\"en\">How are you?</div>"
+        )
     }
 
     #[test]
@@ -73,7 +76,7 @@ mod tests {
 
     #[test]
     fn renders_complex_static_template_str() {
-       let input =  "h1#title.fancy.large Hello World
+        let input = "h1#title.fancy.large Hello World
 div
   img#title-image src=\"images/title.jpg\" width=1000 height=300 alt=\"A great title image.\"";
         let output = render_static_template_str(input);
@@ -86,10 +89,10 @@ div
 
     #[test]
     fn renders_variables() {
-        let mut map = BTreeMap::new(); 
+        let mut map = BTreeMap::new();
         map.insert("first_name", "John");
         map.insert("last_name", "Smith");
         let rendered = render_template_str("h1 Hello, {{first_name}} {{last_name}}!", &map);
-        assert_eq!(rendered,"<h1>Hello, John Smith!</h1>")
+        assert_eq!(rendered, "<h1>Hello, John Smith!</h1>")
     }
 }
