@@ -22,7 +22,7 @@ pub struct Include {
     pub path: String,
 }
 
-#[derive(PartialEq, Eq, Debug, Clone)]
+#[derive(Default, PartialEq, Eq, Debug, Clone)]
 pub struct Attr {
     pub name: String,
     pub value: String,
@@ -32,6 +32,32 @@ pub struct Attr {
 pub enum Cont {
     LINE(String),
     BLOCK(Vec<String>),
+}
+
+impl fmt::Display for Attr {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        if self.value.contains('\"') {
+            write!(f, r#"{name}='{val}'"#, name = self.name, val = self.value)
+        } else {
+            write!(f, r#"{name}="{val}""#, name = self.name, val = self.value)
+        }
+    }
+}
+
+impl fmt::Display for Cont {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Cont::LINE(text) => write!(f, "{}", text),
+            Cont::BLOCK(texts) => {
+                let mut res = String::new();
+                for t in texts {
+                    res.push_str(t);
+                    res.push('\n');
+                }
+                write!(f, "{}", res)
+            }
+        }
+    }
 }
 
 ///Implement some helpers for testing
@@ -143,37 +169,4 @@ impl<'a> Elem {
     }
 }
 
-impl Attr {
-    pub fn default() -> Attr {
-        Attr {
-            name: String::new(),
-            value: String::new(),
-        }
-    }
-}
 
-impl fmt::Display for Attr {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        if self.value.contains('\"') {
-            write!(f, r#"{name}='{val}'"#, name = self.name, val = self.value)
-        } else {
-            write!(f, r#"{name}="{val}""#, name = self.name, val = self.value)
-        }
-    }
-}
-
-impl fmt::Display for Cont {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Cont::LINE(text) => write!(f, "{}", text),
-            Cont::BLOCK(texts) => {
-                let mut res = String::new();
-                for t in texts {
-                    res.push_str(t);
-                    res.push('\n');
-                }
-                write!(f, "{}", res)
-            }
-        }
-    }
-}
