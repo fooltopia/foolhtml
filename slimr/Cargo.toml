@@ -1,0 +1,11 @@
+[package]
+name = "slimr"
+version = "0.0.1"
+authors = ["Jonas Peter <hi@jonaspeter.me>"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+slimr_shared = { path = "../slimr_shared" }
+slimr_derive = { path = "../slimr_derive" }

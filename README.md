@@ -1,4 +1,4 @@
-# FoolHTML
+# SlimR
 A indentation based html template for Rust inspired by [Slim](http://slim-lang.com/) and [Askama](https://github.com/djc/askama)
 
 It uses indentation to determine the scope of elements.
@@ -21,7 +21,7 @@ will be turned into
 The rendered output does not contain any new lines and indentation, but a pretty-print mode for the renderer is planned. 
 
 ## Documentation
-In FoolHTML, the indentation determines the scope of each element. Nested elements are added in the line below with a higher indentation level. *Indentation is two spaces*. This can not be configured at the moment. 
+In SlimR, the indentation determines the scope of each element. Nested elements are added in the line below with a higher indentation level. *Indentation is two spaces*. This can not be configured at the moment. 
 
 ### The Templating Language
 #### Elements
@@ -75,7 +75,7 @@ renders to
 ```
 ### Dynamic Content
 You can set the values of variables inside your template via derive macros.
-Let's say you have a simple foolhtml file called `basic_tag.fhtml` with the following content:
+Let's say you have a simple slimr file called `basic_tag.fhtml` with the following content:
 ```
 h1 Hello {{name}}
 ```

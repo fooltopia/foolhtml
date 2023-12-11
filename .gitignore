@@ -1,7 +1,7 @@
 target
-foolhtml/target
-foolhtml_derive/target
-foolhtml_shared/target
+slimr/target
+slimr_derive/target
+slimr_shared/target
 **/*.rs.bk
 Cargo.lock
 .#*

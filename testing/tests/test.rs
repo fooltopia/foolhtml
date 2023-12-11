@@ -1,4 +1,4 @@
-use foolhtml::Template;
+use slimr::Template;
 
 #[test]
 fn renders_single_var() {
@@ -40,9 +40,9 @@ fn handles_lifetimes() {
 }
 
 #[test]
-fn reads_fhtml_file() {
+fn reads_slimr_file() {
     #[derive(Template)]
-    #[template(path = "testing/templates/basic_tag.fhtml")]
+    #[template(path = "testing/templates/basic_tag.slimr")]
     struct Title<'a> {
         name: &'a str,
     }

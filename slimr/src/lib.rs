@@ -2,9 +2,9 @@
 
 use std::collections::BTreeMap;
 
-use foolhtml_shared::renderer;
+use slimr_shared::renderer;
 
-pub use foolhtml_derive::Template;
+pub use slimr_derive::Template;
 
 //Trait for rendering the template. It's usually derived.
 pub trait Template {

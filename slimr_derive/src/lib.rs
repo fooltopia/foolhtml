@@ -1,4 +1,4 @@
-use foolhtml_shared::renderer;
+use slimr_shared::renderer;
 use proc_macro2::TokenStream;
 use quote::quote;
 use std::iter::Peekable;
@@ -22,7 +22,7 @@ pub fn derive_template(input: proc_macro::TokenStream) -> proc_macro::TokenStrea
     html = reformat_braces(&html);
 
     let tokens = quote! {
-        impl#generics Template for #name#generics {
+        impl #generics Template for #name #generics {
             fn render(&self) -> String {
                 format!(#html, #args)
             }
@@ -106,7 +106,7 @@ fn gen_format_args(fields: &syn::FieldsNamed) -> TokenStream {
     quote! { #( #recurse ),* }
 }
 
-///Turn fhtml variables into format! variables
+///Turn slimr variables into format! variables
 ///and escape all other curly braces.
 fn reformat_braces(source: &str) -> String {
     //TODO find better way to handle variables and allow single {} in content

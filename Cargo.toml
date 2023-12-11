@@ -1,7 +1,8 @@
 [workspace]
 members = [
-"foolhtml",
-"foolhtml_derive",
-"foolhtml_shared",
+"slimr",
+"slimr_derive",
+"slimr_shared",
 "testing",
 ]
+resolver = "2"

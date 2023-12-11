@@ -3,7 +3,7 @@ use pest::Parser;
 use pest_derive::Parser;
 
 #[derive(Parser)]
-#[grammar = "parser/foolhtml.pest"]
+#[grammar = "parser/slimr.pest"]
 struct SHParser;
 
 use super::ast_types::{Attr, Cont, Elem, Include, Node};

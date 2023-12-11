@@ -1,0 +1,17 @@
+[package]
+name = "slimr_derive"
+version = "0.0.1"
+authors = ["Jonas Peter <hi@jonaspeter.me>"]
+edition = "2021"
+
+[lib]
+proc-macro = true
+
+[dev-dependencies]
+trybuild = "1.0"
+
+[dependencies]
+slimr_shared = { path = "../slimr_shared", version = "*" }
+syn = "1"
+quote = "1"
+proc-macro2 = "1"
