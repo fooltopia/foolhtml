@@ -12,6 +12,7 @@ trybuild = "1.0"
 
 [dependencies]
 slimr_shared = { path = "../slimr_shared", version = "*" }
-syn = "1"
+syn = "2"
 quote = "1"
 proc-macro2 = "1"
+darling = "0.20.3"

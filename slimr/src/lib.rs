@@ -4,10 +4,10 @@ use std::collections::BTreeMap;
 
 use slimr_shared::renderer;
 
-pub use slimr_derive::Template;
+pub use slimr_derive::SlimR;
 
 //Trait for rendering the template. It's usually derived.
-pub trait Template {
+pub trait SlimR {
     fn render(&self) -> String;
 }
 

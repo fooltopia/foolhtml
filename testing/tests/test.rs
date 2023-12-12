@@ -1,8 +1,8 @@
-use slimr::Template;
+use slimr::SlimR;
 
 #[test]
 fn renders_single_var() {
-    #[derive(Template)]
+    #[derive(SlimR)]
     #[template(source = "h1 {{arg}}")]
     struct Title {
         arg: String,
@@ -15,7 +15,7 @@ fn renders_single_var() {
 
 #[test]
 fn renders_two_vars() {
-    #[derive(Template)]
+    #[derive(SlimR)]
     #[template(source = "h1 Hello Mr. {{first}} {{last}}")]
     struct Name {
         first: String,
@@ -30,7 +30,7 @@ fn renders_two_vars() {
 
 #[test]
 fn handles_lifetimes() {
-    #[derive(Template)]
+    #[derive(SlimR)]
     #[template(source = "h1 {{arg}}")]
     struct Title<'a> {
         arg: &'a str,
@@ -41,7 +41,7 @@ fn handles_lifetimes() {
 
 #[test]
 fn reads_slimr_file() {
-    #[derive(Template)]
+    #[derive(SlimR)]
     #[template(path = "testing/templates/basic_tag.slimr")]
     struct Title<'a> {
         name: &'a str,

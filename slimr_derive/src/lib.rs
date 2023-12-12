@@ -1,28 +1,39 @@
-use slimr_shared::renderer;
+use darling::FromDeriveInput;
 use proc_macro2::TokenStream;
 use quote::quote;
+use slimr_shared::renderer;
 use std::iter::Peekable;
 use syn;
 
-#[proc_macro_derive(Template, attributes(template))]
+#[proc_macro_derive(SlimR, attributes(template))]
 pub fn derive_template(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let input = syn::parse_macro_input!(input as syn::DeriveInput);
+    let opts = Opts::from_derive_input(&input).expect("Wrong Options");
     let name = input.ident;
     let generics = input.generics;
     let fields = get_named_fields(&input.data);
     let args = gen_format_args(fields);
 
-    let config = get_template_config(input.attrs);
-    let mut html = match config.input.unwrap() {
-        //TODO Error Handling
-        InputType::PATH(path) => renderer::render_path(&path),
-        InputType::SOURCE(string) => renderer::render_source(&string),
+    let mut html = match opts {
+        Opts {
+            path: Some(..),
+            source: Some(..),
+        } => panic!("Please only provide one template source"),
+        Opts {
+            path: Some(path),
+            source: _,
+        } => renderer::render_path(&path),
+        Opts {
+            path: _,
+            source: Some(source),
+        } => renderer::render_source(&source),
+        _ => panic!("Please provide either a path or template source code"),
     };
 
     html = reformat_braces(&html);
 
     let tokens = quote! {
-        impl #generics Template for #name #generics {
+        impl #generics SlimR for #name #generics {
             fn render(&self) -> String {
                 format!(#html, #args)
             }
@@ -31,59 +42,11 @@ pub fn derive_template(input: proc_macro::TokenStream) -> proc_macro::TokenStrea
     tokens.into()
 }
 
-#[derive(Debug)]
-enum InputType {
-    PATH(String),
-    SOURCE(String),
-}
-#[derive(Debug, Default)]
-struct TemplateConfig {
-    input: Option<InputType>,
-}
-
-fn get_template_config(attrs: Vec<syn::Attribute>) -> TemplateConfig {
-    let ident_val_pairs = get_identifier_value_pairs(attrs);
-    let mut config = TemplateConfig::default();
-    for (ident, val) in ident_val_pairs {
-        match ident {
-            i if i == "source" => config.input = Some(InputType::SOURCE(val)),
-            i if i == "path" => config.input = Some(InputType::PATH(val)),
-            _ => unimplemented!(),
-        };
-    }
-    config
-}
-
-fn get_identifier_value_pairs(attrs: Vec<syn::Attribute>) -> Vec<(String, String)> {
-    let mut ident_val_pairs = Vec::<(String, String)>::new();
-    for attr in attrs {
-        let mut ident = String::default();
-        let mut val = String::default();
-        for token_tree in attr.tokens {
-            match token_tree {
-                proc_macro2::TokenTree::Group(gp) => {
-                    for token in gp.stream() {
-                        match token {
-                            proc_macro2::TokenTree::Ident(i) => ident = i.to_string(),
-                            proc_macro2::TokenTree::Literal(l) => val = drop_quotes(l.to_string()),
-                            _ => (),
-                        }
-                    }
-                }
-                _other => unreachable!(),
-            }
-        }
-        ident_val_pairs.push((ident, val));
-    }
-    ident_val_pairs
-}
-
-///Remove the first and last character of the string
-///This is necessary because proc_macro2::TokenTree::Literal
-///includes the quotes around the literal string.
-fn drop_quotes(s: String) -> String {
-    let len = s.len();
-    s[1..len - 1].to_string()
+#[derive(FromDeriveInput, Default)]
+#[darling(default, attributes(template))]
+struct Opts {
+    path: Option<String>,
+    source: Option<String>,
 }
 
 fn get_named_fields(data: &syn::Data) -> &syn::FieldsNamed {
